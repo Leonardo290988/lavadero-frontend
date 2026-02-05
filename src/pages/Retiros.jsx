@@ -11,7 +11,7 @@ function Retiros() {
 
   const cargarRetiros = async () => {
     try {
-      const res = await axios.get("https://lavadero-backend-production.up.railway.app/ordenes/retiradas", {
+      const res = await axios.get("https://lavadero-backend-production-e1eb.up.railway.app/ordenes/retiradas", {
         params: { q: busqueda }
       });
       setRetiros(res.data);
