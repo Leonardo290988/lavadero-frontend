@@ -9,7 +9,7 @@ export default function Envios() {
 
   const cargarEnvios = async () => {
     try {
-      const res = await fetch("https://lavadero-backend-production.up.railway.app/envios/pendientes");
+      const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/envios/pendientes");
       const data = await res.json();
       setEnvios(data);
     } catch (err) {

@@ -5,7 +5,7 @@ export default function SolicitudesRetiros() {
   const [retiros, setRetiros] = useState([]);
 
   const cargar = async () => {
-    const res = await fetch("https://lavadero-backend-production.up.railway.app/retiros/pendientes");
+    const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/retiros/pendientes");
     const data = await res.json();
     setRetiros(data);
   };
@@ -17,7 +17,7 @@ export default function SolicitudesRetiros() {
   const aceptar = async (id) => {
     if(!window.confirm("¿Aceptar solicitud?")) return;
 
-    await fetch(`https://lavadero-backend-production.up.railway.app/retiros/${id}/aceptar`, {
+    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/retiros/${id}/aceptar`, {
       method:"PUT"
     });
 
@@ -27,7 +27,7 @@ export default function SolicitudesRetiros() {
   const rechazar = async (id) => {
     if(!window.confirm("¿Rechazar solicitud?")) return;
 
-    await fetch(`https://lavadero-backend-production.up.railway.app/retiros/${id}/rechazar`, {
+    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/retiros/${id}/rechazar`, {
       method:"PUT"
     });
 

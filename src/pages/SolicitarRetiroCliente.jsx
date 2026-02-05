@@ -11,7 +11,7 @@ export default function SolicitarRetiroCliente({ ordenId, clienteId }) {
   // -------------------
   const cargarPrecio = async (z) => {
     const res = await fetch(
-      `https://lavadero-backend-production.up.railway.app/retiros/precio/${z}`
+      `https://lavadero-backend-production-e1eb.up.railway.app/retiros/precio/${z}`
     );
     const data = await res.json();
     setPrecio(data.precio);
@@ -36,7 +36,7 @@ export default function SolicitarRetiroCliente({ ordenId, clienteId }) {
     }
 
     const res = await fetch(
-      "https://lavadero-backend-production.up.railway.app/retiros",
+      "https://lavadero-backend-production-e1eb.up.railway.app/retiros",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

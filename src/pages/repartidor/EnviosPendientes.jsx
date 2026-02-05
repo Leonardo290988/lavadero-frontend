@@ -4,7 +4,7 @@ export default function EnviosPendientesRepartidor() {
   const [envios, setEnvios] = useState([]);
 
   const cargar = async () => {
-    const res = await fetch("https://lavadero-backend-production.up.railway.app/envios/pendientes");
+    const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/envios/pendientes");
     const data = await res.json();
     setEnvios(data);
   };
@@ -14,7 +14,7 @@ export default function EnviosPendientesRepartidor() {
   }, []);
 
   const entregar = async (id, forma_pago) => {
-    await fetch(`https://lavadero-backend-production.up.railway.app/envios/${id}/entregar`, {
+    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/envios/${id}/entregar`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ forma_pago })

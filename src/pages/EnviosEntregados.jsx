@@ -6,7 +6,7 @@ export default function EnviosEntregados() {
 
   const cargar = async () => {
     try {
-      const res = await fetch("https://lavadero-backend-production.up.railway.app/envios/entregados");
+      const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/envios/entregados");
       const data = await res.json();
       setEnvios(data);
     } catch {

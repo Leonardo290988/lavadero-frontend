@@ -23,7 +23,7 @@ function Retiros() {
 
   const abrirDetalle = async (id) => {
     const res = await axios.get(
-     ` https://lavadero-backend-production.up.railway.app/ordenes/${id}/servicios`
+     ` https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/servicios`
     );
 
     setDetalle(res.data);

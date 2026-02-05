@@ -13,7 +13,7 @@ export default function DetalleOrden() {
   const [senia, setSenia] = useState(0);
 
   const cargarDetalle = async () => {
-    const res = await fetch(`https://lavadero-backend-production.up.railway.app/ordenes/${id}/detalle`);
+    const res = await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/detalle`);
     const data = await res.json();
     setOrden(data);
     setSenia(Number(data.senia) || 0);
@@ -36,7 +36,7 @@ export default function DetalleOrden() {
   useEffect(() => {
     const cargarServicios = async () => {
       try {
-        const res = await fetch("https://lavadero-backend-production.up.railway.app/servicios");
+        const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/servicios");
         const data = await res.json();
         setServicios(data);
       } catch (error) {
@@ -50,7 +50,7 @@ export default function DetalleOrden() {
   const agregarServicio = async () => {
     if (!servicioId || cantidad <= 0) return;
 
-    await fetch(`https://lavadero-backend-production.up.railway.app/ordenes/${id}/servicios`, {
+    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/servicios`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -65,7 +65,7 @@ export default function DetalleOrden() {
   };
 
   const guardarSenia = async (valor) => {
-    await fetch(`https://lavadero-backend-production.up.railway.app/ordenes/${id}/senia`, {
+    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/senia`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senia: valor })
@@ -77,14 +77,14 @@ export default function DetalleOrden() {
   // ✅ NUEVO
 const confirmarOrden = async () => {
   const res = await fetch(
-    `https://lavadero-backend-production.up.railway.app/ordenes/${id}/confirmar`,
+    `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/confirmar`,
     { method: "POST" }
   );
 
   if (res.ok) {
 
     // 👉 abrir ticket 2 veces
-    const url = `https://lavadero-backend-production.up.railway.app/pdf/ordenes/orden_${id}.pdf`;
+    const url = `https://lavadero-backend-production-e1eb.up.railway.app/pdf/ordenes/orden_${id}.pdf`;
 
     window.open(url, "_blank");
     setTimeout(() => {

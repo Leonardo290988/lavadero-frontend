@@ -15,7 +15,7 @@ export default function Resumenes() {
 
   const cargarResumen = async () => {
     const res = await fetch(
-      `https://lavadero-backend-production.up.railway.app/caja/resumenes/${tipo}s`
+      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
     );
     const data = await res.json();
     setDatos(data);
@@ -45,7 +45,7 @@ export default function Resumenes() {
       <button
         onClick={() =>
           window.open(
-            `https://lavadero-backend-production.up.railway.app/caja/pdf/${tipo}/resumen_${tipo}.pdf`,
+            `https://lavadero-backend-production-e1eb.up.railway.app/caja/pdf/${tipo}/resumen_${tipo}.pdf`,
             "_blank"
           )
         }
