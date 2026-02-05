@@ -26,9 +26,20 @@ export default function Caja() {
         return;
       }
 
-      const data = await res.json();
-      setCaja(data);
-      cargarResumen(data.id);
+    const data = await res.json();
+
+if (data.error) {
+  setCaja(null);
+
+  const r = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/caja/ultimo-cierre");
+  const d = await r.json();
+  setMontoInicial(d?.monto || "");
+
+  return;
+}
+
+setCaja(data);
+cargarResumen(data.id);
     } catch (error) {
       console.error("Error cargar caja:", error);
       setCaja(null);
@@ -138,7 +149,7 @@ const registrarGasto = async () => {
     if (!window.confirm("¿Cerrar caja?")) return;
 
     const res = await fetch(
-     `https://lavadero-backend-production.up.railway-e1eb.app/caja/cerrar/${caja.id}`,
+     `https://lavadero-backend-production-e1eb.up.railway.app/caja/cerrar/${caja.id}`,
       { method: "POST" }
     );
 
