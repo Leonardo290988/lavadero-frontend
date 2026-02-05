@@ -13,7 +13,7 @@ export default function OrdenesListas() {
 
   const cargarOrdenes = async () => {
     try {
-      const res = await fetch("https://lavadero-backend-production.up.railway.app/ordenes/listas");
+      const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/ordenes/listas");
       const data = await res.json();
       setOrdenes(data);
     } catch (error) {
@@ -34,7 +34,7 @@ export default function OrdenesListas() {
   const confirmarRetiro = async () => {
     try {
       const res = await fetch(
-  `https://lavadero-backend-production.up.railway.app/ordenes/${ordenSeleccionada}/retirar`,
+  `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${ordenSeleccionada}/retirar`,
   {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
