@@ -1,3 +1,4 @@
+import { fechaArgentina } from "../utils/fecha";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Retiros.css";
@@ -72,7 +73,7 @@ function Retiros() {
               <td>{r.cliente}</td>
               <td>{r.telefono}</td>
               <td className="total">${r.total}</td>
-              <td>{new Date(r.fecha_retiro).toLocaleString()}</td>
+              <td>{fechaArgentina(r.fecha_retiro)}</td>
             </tr>
           ))}
         </tbody>

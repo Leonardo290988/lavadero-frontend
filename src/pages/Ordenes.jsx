@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fechaArgentina } from "../utils/fecha";
 
 export default function Ordenes() {
   const [ordenes, setOrdenes] = useState([]);
@@ -77,7 +78,7 @@ export default function Ordenes() {
                   <td className="px-4 py-3">#{o.id}</td>
                   <td className="px-4 py-3">{o.cliente}</td>
                   <td className="px-4 py-3">
-                    {new Date(o.fecha_ingreso).toLocaleDateString()}
+                    {fechaArgentina(o.fecha_ingreso)}
                   </td>
 
                   <td className="px-4 py-3 font-semibold">
