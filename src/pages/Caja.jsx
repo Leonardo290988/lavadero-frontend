@@ -13,12 +13,12 @@ export default function Caja() {
   // -------------------------
   const cargarCaja = async () => {
     try {
-      const res = await fetch("https://lavadero-backend-production.up.railway.app/caja/actual");
+      const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/caja/actual");
 
       if (!res.ok) {
         setCaja(null);
 
-   const r = await fetch("https://lavadero-backend-production.up.railway.app/caja/ultimo-cierre");
+   const r = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/caja/ultimo-cierre");
    const d = await r.json();
   setMontoInicial(d.monto);
 
@@ -44,7 +44,7 @@ export default function Caja() {
   // -------------------------
   const cargarResumen = async (cajaId) => {
     const res = await fetch(
-     ` https://lavadero-backend-production.up.railway.app/caja/resumen/turno/${cajaId}`
+     ` https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${cajaId}`
     );
     const data = await res.json();
     setResumen(data);
@@ -60,7 +60,7 @@ export default function Caja() {
       return;
     }
 
-    const res = await fetch("https://lavadero-backend-production.up.railway.app/caja/abrir", {
+    const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/caja/abrir", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -88,7 +88,7 @@ export default function Caja() {
   const monto = prompt("Monto a guardar:");
   if (!monto || isNaN(monto)) return;
 
-  await fetch("https://lavadero-backend-production.up.railway.app/caja/movimiento", {
+  await fetch("https://lavadero-backend-production-e1eb.up.railway.app/caja/movimiento", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -115,7 +115,7 @@ const registrarGasto = async () => {
   const descripcion = prompt("Descripción del gasto:");
   if (!descripcion) return;
 
-  await fetch("https://lavadero-backend-production.up.railway.app/caja/movimiento", {
+  await fetch("https://lavadero-backend-production-e1eb.up.railway.app/caja/movimiento", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -138,7 +138,7 @@ const registrarGasto = async () => {
     if (!window.confirm("¿Cerrar caja?")) return;
 
     const res = await fetch(
-     `https://lavadero-backend-production.up.railway.app/caja/cerrar/${caja.id}`,
+     `https://lavadero-backend-production.up.railway-e1eb.app/caja/cerrar/${caja.id}`,
       { method: "POST" }
     );
 
