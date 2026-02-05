@@ -6,10 +6,9 @@ export default function OrdenesListas() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ⬇️ NUEVO (modal pago)
   const [mostrarModal, setMostrarModal] = useState(false);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
-  const [metodoPago, setMetodoPago] = useState("efectivo");
+  const [metodoPago, setMetodoPago] = useState("Efectivo");
 
   const cargarOrdenes = async () => {
     try {
@@ -23,34 +22,37 @@ export default function OrdenesListas() {
     }
   };
 
-  // ⬇️ REEMPLAZA al prompt
   const retirarOrden = (id) => {
     setOrdenSeleccionada(id);
     setMetodoPago("Efectivo");
     setMostrarModal(true);
   };
 
-  // ⬇️ NUEVO: confirmar retiro
   const confirmarRetiro = async () => {
     try {
       const res = await fetch(
-  `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${ordenSeleccionada}/retirar`,
-  {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ metodo_pago: metodoPago }),
-  }
-);
+        `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${ordenSeleccionada}/retirar`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ metodo_pago: metodoPago }),
+        }
+      );
 
-const data = await res.json();
+      const data = await res.json();
 
-if (!res.ok) {
-  alert(data.error || "Error al retirar orden");
-  return;
-}
+      if (!res.ok) {
+        alert(data.error || "Error al retirar orden");
+        return;
+      }
 
-alert("Orden retirada correctamente");
+      alert("Orden retirada correctamente");
 
+      // ✅ ABRIR PDF DEL RETIRO
+      window.open(
+        `https://lavadero-backend-production-e1eb.up.railway.app/pdf/retiros/retiro_${ordenSeleccionada}.pdf`,
+        "_blank"
+      );
 
       setMostrarModal(false);
       setOrdenSeleccionada(null);
@@ -123,7 +125,6 @@ alert("Orden retirada correctamente");
         </div>
       )}
 
-      {/* ⬇️ MODAL MÉTODO DE PAGO */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-80 shadow-xl">
@@ -137,8 +138,9 @@ alert("Orden retirada correctamente");
               className="w-full border rounded px-3 py-2 mb-4"
             >
               <option value="Efectivo">Efectivo</option>
-              <option value="Transferencia/MercadoPago">Transferencia/MercadoPago</option>
-              
+              <option value="Transferencia/MercadoPago">
+                Transferencia/MercadoPago
+              </option>
             </select>
 
             <div className="flex justify-end gap-2">
