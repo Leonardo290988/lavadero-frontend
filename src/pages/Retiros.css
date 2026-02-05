@@ -1,0 +1,57 @@
+.retiros-container {
+  padding: 20px;
+}
+
+.buscador {
+  padding: 8px;
+  width: 300px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.tabla-retiros {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-retiros th {
+  background-color: #1f2937;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+.tabla-retiros td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabla-retiros tr:hover {
+  background-color: #f3f4f6;
+  cursor: pointer;
+}
+
+.total {
+  font-weight: bold;
+  color: green;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+}
