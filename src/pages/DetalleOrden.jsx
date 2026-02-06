@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { formatearFecha } from "../utils/fechas";
 
 
 export default function DetalleOrden() {
