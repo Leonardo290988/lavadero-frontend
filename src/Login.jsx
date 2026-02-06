@@ -24,7 +24,7 @@ function Login({ onLogin }) {
     <div className="login-container">
       <div className="login-card">
 
-        <div className="logo">🧺</div>
+        <div className="logo">LM</div>
 
         <h1>LAVADEROS MORENO</h1>
         <p>Sistema de Gestión</p>
