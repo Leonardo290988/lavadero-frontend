@@ -22,18 +22,22 @@ export default function Resumenes() {
   const cargarResumen = async () => {
 
     if (tipo === "turno" && turnoId) {
+
       const res = await fetch(
         `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
       );
+
       const data = await res.json();
 
-      // Le agregamos un id artificial
-      setDatos([{ ...data, _turnoId: turnoId }]);
+      // ⚠️ backend debe devolver id del resumen turno
+      setDatos([data]);
+
     } else {
 
       const res = await fetch(
         `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
       );
+
       const data = await res.json();
       setDatos(data);
     }
@@ -82,16 +86,6 @@ export default function Resumenes() {
       return;
     }
 
-    // 👉 TURNO
-    if (tipo === "turno") {
-      window.open(
-        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${seleccionado}`,
-        "_blank"
-      );
-      return;
-    }
-
-    // 👉 DIARIO / SEMANAL / MENSUAL
     const res = await fetch(
       `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
     );
@@ -182,41 +176,38 @@ export default function Resumenes() {
         </thead>
 
         <tbody>
-          {datos.map((r, i) => {
-
-            const idFila = r.id || r._turnoId;
-
-            return (
-              <tr
-                key={i}
-                onClick={() => setSeleccionado(idFila)}
-                style={{
-                  ...fila,
-                  background:
-                    seleccionado === idFila
-                      ? "#dbeafe"
-                      : "white"
-                }}
-              >
-                <td>{r.fecha_desde ? formatearSoloFecha(r.fecha_desde) : ""}</td>
-                <td>{r.fecha_hasta ? formatearSoloFecha(r.fecha_hasta) : ""}</td>
-                <td>{r.creado_en ? formatearFechaHora(r.creado_en) : ""}</td>
-                <td>{formato(r.ingresos_efectivo)}</td>
-                <td>{formato(r.ingresos_digital || r.transferencias)}</td>
-                <td style={{ color: "red" }}>{formato(r.gastos)}</td>
-                <td style={{ color: "blue" }}>{formato(r.guardado)}</td>
-                <td style={{ fontWeight: "bold" }}>{formato(r.total_ventas)}</td>
-                <td style={{ fontWeight: "bold" }}>{formato(r.caja_final || r.efectivo_final)}</td>
-              </tr>
-            );
-          })}
+          {datos.map((r) => (
+            <tr
+              key={r.id}
+              onClick={() => setSeleccionado(r.id)}
+              style={{
+                ...fila,
+                background:
+                  seleccionado === r.id
+                    ? "#dbeafe"
+                    : "white"
+              }}
+            >
+              <td>{r.fecha_desde ? formatearSoloFecha(r.fecha_desde) : ""}</td>
+              <td>{r.fecha_hasta ? formatearSoloFecha(r.fecha_hasta) : ""}</td>
+              <td>{r.creado_en ? formatearFechaHora(r.creado_en) : ""}</td>
+              <td>{formato(r.ingresos_efectivo)}</td>
+              <td>{formato(r.ingresos_digital || r.transferencias)}</td>
+              <td style={{ color: "red" }}>{formato(r.gastos)}</td>
+              <td style={{ color: "blue" }}>{formato(r.guardado)}</td>
+              <td style={{ fontWeight: "bold" }}>{formato(r.total_ventas)}</td>
+              <td style={{ fontWeight: "bold" }}>
+                {formato(r.caja_final || r.efectivo_final)}
+              </td>
+            </tr>
+          ))}
         </tbody>
 
         <tfoot>
           <tr style={{ background: "#f3f4f6", fontWeight: "bold" }}>
             <td colSpan="3">TOTALES</td>
             <td>{formato(total("ingresos_efectivo"))}</td>
-            <td>{formato(total("ingresos_digital"))}</td>
+            <td>{formato(total("ingresos_digital") + total("transferencias"))}</td>
             <td>{formato(total("gastos"))}</td>
             <td>{formato(total("guardado"))}</td>
             <td>{formato(total("total_ventas"))}</td>
