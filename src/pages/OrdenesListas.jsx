@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 export default function OrdenesListas() {
+
+  const usuario = JSON.parse(localStorage.getItem("usuario"));   // ✅ AGREGADO
+
   const [ordenes, setOrdenes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -36,7 +38,10 @@ export default function OrdenesListas() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ metodo_pago: metodoPago }),
+          body: JSON.stringify({
+            metodo_pago: metodoPago,
+            usuario_id: usuario?.id   // ✅ AGREGADO
+          }),
         }
       );
 
@@ -49,7 +54,6 @@ export default function OrdenesListas() {
 
       alert("Orden retirada correctamente");
 
-      // ✅ ABRIR PDF DEL RETIRO
       window.open(
         `https://lavadero-backend-production-e1eb.up.railway.app/pdf/retiros/retiro_${ordenSeleccionada}.pdf`,
         "_blank"
@@ -98,11 +102,11 @@ export default function OrdenesListas() {
                 <tr key={o.id} className="border-t">
                   <td className="px-4 py-3">#{o.id}</td>
                   <td className="px-4 py-3">{o.cliente}</td>
-                 <td className="px-4 py-3">
-  {new Date(o.fecha_ingreso).toLocaleString("es-AR", {
-    hour12: false
-  })}
-</td>
+                  <td className="px-4 py-3">
+                    {new Date(o.fecha_ingreso).toLocaleString("es-AR", {
+                      hour12: false
+                    })}
+                  </td>
                   <td className="px-4 py-3 font-semibold">
                     ${o.total_a_pagar}
                   </td>

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Retiros.css";
@@ -63,6 +62,7 @@ function Retiros() {
             <th>Teléfono</th>
             <th>Total</th>
             <th>Fecha retiro</th>
+            <th>Entregado por</th> {/* ✅ AGREGADO */}
           </tr>
         </thead>
 
@@ -73,7 +73,8 @@ function Retiros() {
               <td>{r.cliente}</td>
               <td>{r.telefono}</td>
               <td className="total">${r.total}</td>
-              <td> {new Date(r.fecha_retiro).toLocaleString("es-AR", {hour12: false})}</td>
+              <td>{new Date(r.fecha_retiro).toLocaleString("es-AR", { hour12: false })}</td>
+              <td>{r.usuario}</td> {/* ✅ AGREGADO */}
             </tr>
           ))}
         </tbody>
