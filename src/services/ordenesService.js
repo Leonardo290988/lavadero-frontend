@@ -1,5 +1,5 @@
 const API_URL = 'https://lavadero-backend-production-e1eb.up.railway.app';
-import { fechaArgentina } from "../utils/fecha";
+
 // ==========================
 // CREAR ORDEN
 // ==========================
@@ -13,7 +13,7 @@ export const crearOrden = async (cliente_id, senia = 0) => {
     body: JSON.stringify({
       cliente_id: Number(cliente_id),
       estado: 'ingresado',
-      fecha_ingreso: fechaArgentina(),
+      fecha_ingreso: new Date().toISOString(),
       fecha_retiro: null,
       senia: Number(senia)
     })

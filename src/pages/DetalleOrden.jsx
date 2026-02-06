@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fechaArgentina } from "../utils/fecha";
+
 
 export default function DetalleOrden() {
   const { id } = useParams();
@@ -144,7 +144,12 @@ const confirmarOrden = async () => {
       <div className="bg-white rounded shadow p-4 mb-6">
         <p><b>Cliente:</b> {orden.cliente}</p>
         <p><b>Estado:</b> {orden.estado}</p>
-        <p><b>Ingreso:</b> {fechaArgentina(orden.fecha_ingreso)}</p>
+        <p>
+  <b>Ingreso:</b>{" "}
+  {new Date(orden.fecha_ingreso).toLocaleString("es-AR", {
+    hour12: false
+  })}
+</p>
 
         <div className="mt-3 flex items-center gap-3">
           <b>Seña:</b>
