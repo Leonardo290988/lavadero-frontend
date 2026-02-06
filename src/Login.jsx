@@ -1,12 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
+import "./Login.css";
 
 function Login({ onLogin }) {
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const ingresar = async () => {
+  const handleLogin = async () => {
     try {
       const res = await axios.post(
         "https://lavadero-backend-production-e1eb.up.railway.app/usuarios/login",
@@ -20,25 +21,34 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div style={{ maxWidth: 300, margin: "100px auto" }}>
-      <h2>Ingresar</h2>
+    <div className="login-container">
+      <div className="login-card">
 
-      <input
-        placeholder="Usuario"
-        value={usuario}
-        onChange={e => setUsuario(e.target.value)}
-      />
+        <div className="logo">🧺</div>
 
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
+        <h1>LAVADEROS MORENO</h1>
+        <p>Sistema de Gestión</p>
 
-      <button onClick={ingresar}>Entrar</button>
+        {error && <span className="error">{error}</span>}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        <input
+          placeholder="Usuario"
+          value={usuario}
+          onChange={e => setUsuario(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+
+        <button onClick={handleLogin}>
+          Ingresar
+        </button>
+
+      </div>
     </div>
   );
 }
