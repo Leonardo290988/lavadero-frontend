@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 
-const formatearSoloFecha = (f) => {
-  return new Date(f).toLocaleDateString("es-AR", { hour12: false });
-};
+const formatearSoloFecha = (f) =>
+  new Date(f).toLocaleDateString("es-AR");
 
-const formatearFechaHora = (f) => {
-  return new Date(f).toLocaleString("es-AR", { hour12: false });
-};
+const formatearFechaHora = (f) =>
+  new Date(f).toLocaleString("es-AR");
 
 export default function Resumenes() {
 
@@ -16,25 +14,31 @@ export default function Resumenes() {
   const [turnos, setTurnos] = useState([]);
   const [turnoId, setTurnoId] = useState("");
 
-  const [resumenSeleccionado, setResumenSeleccionado] = useState(null);
+  const [seleccionado, setSeleccionado] = useState(null);
 
   // =========================
   // CARGAR RESUMENES
   // =========================
   const cargarResumen = async () => {
+
     if (tipo === "turno" && turnoId) {
       const res = await fetch(
         `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
       );
       const data = await res.json();
-      setDatos([data]);
+
+      // Le agregamos un id artificial
+      setDatos([{ ...data, _turnoId: turnoId }]);
     } else {
+
       const res = await fetch(
         `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
       );
       const data = await res.json();
       setDatos(data);
     }
+
+    setSeleccionado(null);
   };
 
   // =========================
@@ -54,9 +58,11 @@ export default function Resumenes() {
 
   useEffect(() => {
     cargarResumen();
-    setResumenSeleccionado(null);
   }, [tipo, turnoId]);
 
+  // =========================
+  // FORMATO
+  // =========================
   const formato = (n) =>
     Number(n || 0).toLocaleString("es-AR", {
       style: "currency",
@@ -67,16 +73,27 @@ export default function Resumenes() {
     datos.reduce((acc, d) => acc + Number(d[campo] || 0), 0);
 
   // =========================
-  // IMPRIMIR SELECCIONADO
+  // IMPRIMIR
   // =========================
   const imprimirSeleccionado = async () => {
-    if (!resumenSeleccionado) {
+
+    if (!seleccionado) {
       alert("Seleccione un resumen");
       return;
     }
 
+    // 👉 TURNO
+    if (tipo === "turno") {
+      window.open(
+        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${seleccionado}`,
+        "_blank"
+      );
+      return;
+    }
+
+    // 👉 DIARIO / SEMANAL / MENSUAL
     const res = await fetch(
-      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${resumenSeleccionado}`
+      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
     );
 
     const data = await res.json();
@@ -87,6 +104,9 @@ export default function Resumenes() {
     );
   };
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div style={{ padding: 30 }}>
 
@@ -94,7 +114,6 @@ export default function Resumenes() {
         📊 Resúmenes
       </h2>
 
-      {/* BOTON PDF */}
       <button
         onClick={imprimirSeleccionado}
         style={{
@@ -112,17 +131,10 @@ export default function Resumenes() {
         🖨 Imprimir PDF
       </button>
 
-      {/* SELECTOR TIPO */}
       <select
         value={tipo}
         onChange={(e) => setTipo(e.target.value)}
-        style={{
-          padding: 10,
-          fontSize: 16,
-          marginBottom: 20,
-          borderRadius: 6,
-          marginRight: 10
-        }}
+        style={{ padding: 10, fontSize: 16, marginRight: 10 }}
       >
         <option value="diario">Diario</option>
         <option value="semanal">Semanal</option>
@@ -130,12 +142,11 @@ export default function Resumenes() {
         <option value="turno">Por turno</option>
       </select>
 
-      {/* SELECTOR TURNO */}
       {tipo === "turno" && (
         <select
           value={turnoId}
           onChange={(e) => setTurnoId(e.target.value)}
-          style={{ padding: 10, borderRadius: 6 }}
+          style={{ padding: 10 }}
         >
           <option value="">Seleccione turno</option>
           {turnos.map(t => (
@@ -146,13 +157,13 @@ export default function Resumenes() {
         </select>
       )}
 
-      {/* TABLA */}
       <table
         style={{
           width: "100%",
           borderCollapse: "collapse",
           background: "#fff",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)"
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          marginTop: 20
         }}
       >
 
@@ -171,32 +182,36 @@ export default function Resumenes() {
         </thead>
 
         <tbody>
-          {datos.map((r) => (
-            <tr
-              key={r.id}
-              style={{
-                ...fila,
-                background:
-                  resumenSeleccionado === r.id
-                    ? "#dbeafe"
-                    : "white"
-              }}
-              onClick={() => setResumenSeleccionado(r.id)}
-            >
-              <td>{r.fecha_desde ? formatearSoloFecha(r.fecha_desde) : ""}</td>
-              <td>{r.fecha_hasta ? formatearSoloFecha(r.fecha_hasta) : ""}</td>
-              <td>{r.creado_en ? formatearFechaHora(r.creado_en) : ""}</td>
-              <td>{formato(r.ingresos_efectivo)}</td>
-              <td>{formato(r.ingresos_digital)}</td>
-              <td style={{ color: "red" }}>{formato(r.gastos)}</td>
-              <td style={{ color: "blue" }}>{formato(r.guardado)}</td>
-              <td style={{ fontWeight: "bold" }}>{formato(r.total_ventas)}</td>
-              <td style={{ fontWeight: "bold" }}>{formato(r.caja_final)}</td>
-            </tr>
-          ))}
+          {datos.map((r, i) => {
+
+            const idFila = r.id || r._turnoId;
+
+            return (
+              <tr
+                key={i}
+                onClick={() => setSeleccionado(idFila)}
+                style={{
+                  ...fila,
+                  background:
+                    seleccionado === idFila
+                      ? "#dbeafe"
+                      : "white"
+                }}
+              >
+                <td>{r.fecha_desde ? formatearSoloFecha(r.fecha_desde) : ""}</td>
+                <td>{r.fecha_hasta ? formatearSoloFecha(r.fecha_hasta) : ""}</td>
+                <td>{r.creado_en ? formatearFechaHora(r.creado_en) : ""}</td>
+                <td>{formato(r.ingresos_efectivo)}</td>
+                <td>{formato(r.ingresos_digital || r.transferencias)}</td>
+                <td style={{ color: "red" }}>{formato(r.gastos)}</td>
+                <td style={{ color: "blue" }}>{formato(r.guardado)}</td>
+                <td style={{ fontWeight: "bold" }}>{formato(r.total_ventas)}</td>
+                <td style={{ fontWeight: "bold" }}>{formato(r.caja_final || r.efectivo_final)}</td>
+              </tr>
+            );
+          })}
         </tbody>
 
-        {/* TOTALES */}
         <tfoot>
           <tr style={{ background: "#f3f4f6", fontWeight: "bold" }}>
             <td colSpan="3">TOTALES</td>
