@@ -14,7 +14,12 @@ function Login({ onLogin }) {
         { usuario, password }
       );
 
+      // ✅ GUARDAR USUARIO LOGUEADO
+      localStorage.setItem("usuario", JSON.stringify(res.data));
+
+      // ✅ SEGUIR FLUJO NORMAL
       onLogin(res.data);
+
     } catch {
       setError("Usuario o contraseña incorrectos");
     }

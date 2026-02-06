@@ -143,6 +143,7 @@ const confirmarOrden = async () => {
       {/* DATOS ORDEN */}
       <div className="bg-white rounded shadow p-4 mb-6">
         <p><b>Cliente:</b> {orden.cliente}</p>
+        <p><b>Creada por:</b> {orden.usuario}</p>
         <p><b>Estado:</b> {orden.estado}</p>
         <p>
   <b>Ingreso:</b>{" "}

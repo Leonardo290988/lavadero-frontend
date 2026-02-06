@@ -44,8 +44,9 @@ const cargarClientes = async (inputValue) => {
 };
 
  const crearOrdenConCliente = async (cliente_id) => {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
   try {
-    const orden = await crearOrden(cliente_id, senia);
+    const orden = await crearOrden(cliente_id, senia, usuario.id);
     navigate(`/ordenes/${orden.id}`);
   } catch (error) {
     alert(error.message);
