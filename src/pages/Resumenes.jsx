@@ -17,35 +17,6 @@ export default function Resumenes() {
   const [seleccionado, setSeleccionado] = useState(null);
 
   // =========================
-  // CARGAR RESUMENES
-  // =========================
-  const cargarResumen = async () => {
-
-    if (tipo === "turno" && turnoId) {
-
-      const res = await fetch(
-        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
-      );
-
-      const data = await res.json();
-
-      // ⚠️ backend debe devolver id del resumen turno
-      setDatos([data]);
-
-    } else {
-
-      const res = await fetch(
-        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
-      );
-
-      const data = await res.json();
-      setDatos(data);
-    }
-
-    setSeleccionado(null);
-  };
-
-  // =========================
   // CARGAR TURNOS
   // =========================
   const cargarTurnos = async () => {
@@ -54,6 +25,36 @@ export default function Resumenes() {
     );
     const data = await res.json();
     setTurnos(data);
+  };
+
+  // =========================
+  // CARGAR RESUMENES
+  // =========================
+  const cargarResumen = async () => {
+
+    // 👉 TURNO
+    if (tipo === "turno" && turnoId) {
+
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
+      );
+
+      const data = await res.json();
+
+      // le inyectamos id válido
+      setDatos([{ ...data, id: turnoId }]);
+      setSeleccionado(null);
+      return;
+    }
+
+    // 👉 OTROS
+    const res = await fetch(
+      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
+    );
+
+    const data = await res.json();
+    setDatos(data);
+    setSeleccionado(null);
   };
 
   useEffect(() => {
@@ -86,6 +87,16 @@ export default function Resumenes() {
       return;
     }
 
+    // 👉 TURNO
+    if (tipo === "turno") {
+      window.open(
+        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${seleccionado}`,
+        "_blank"
+      );
+      return;
+    }
+
+    // 👉 DIARIO / SEMANAL / MENSUAL
     const res = await fetch(
       `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
     );
