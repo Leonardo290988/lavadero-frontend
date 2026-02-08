@@ -255,7 +255,7 @@ const confirmarOrden = async () => {
                 <td className="px-4 py-2 text-center">{s.cantidad}</td>
                 <td className="px-4 py-2 text-center">${s.precio_unitario}</td>
                 <td className="px-4 py-2 text-center">${s.subtotal}</td>
-                <td className="px-4 py-2 text-center"><button onClick={() => eliminarServicio(s.id)} className="text-red-600 hover:underline"> Eliminar </button> </td>
+                <td className="px-4 py-2 text-center"><button onClick={() => eliminarServicio(s.orden_servicio_id)} className="text-red-600 hover:underline"> Eliminar </button> </td>
               </tr>
             ))}
           </tbody>
