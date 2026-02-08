@@ -1,10 +1,21 @@
 export function formatearFecha(fecha) {
   if (!fecha) return "-";
 
-  // fecha viene como "2026-02-08T00:02:52.000"
-  const [date, time] = fecha.split("T");
-  const [year, month, day] = date.split("-");
-  const [hour, minute, second] = time.split(":");
+  // fecha viene tipo: "2026-02-08 03:24:18"
+  const [datePart, timePart] = fecha.split(" ");
+  const [year, month, day] = datePart.split("-");
+  const [hour, minute, second] = timePart.split(":");
 
-  return `${day}/${month}/${year}, ${hour}:${minute}:${second.slice(0,2)}`;
+  const date = new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second)
+  );
+
+  return date.toLocaleString("es-AR", {
+    hour12: false
+  });
 }
