@@ -81,7 +81,7 @@ export default function Ordenes() {
                   <td className="px-4 py-3">#{o.id}</td>
                   <td className="px-4 py-3">{o.cliente}</td>
                   <td className="px-4 py-3">
-                  {formatearFechaHoraISO(orden.fecha_ingreso)}
+                  {formatearFechaHoraISO(o.fecha_ingreso)}
 </td>
 
                   <td className="px-4 py-3 font-semibold">
