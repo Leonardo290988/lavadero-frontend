@@ -79,6 +79,18 @@ export default function DetalleOrden() {
     await cargarDetalle();
   };
 
+// 🗑️ ELIMINAR SERVICIO (NUEVO)
+  const eliminarServicio = async (ordenServicioId) => {
+    if (!window.confirm("¿Eliminar este servicio?")) return;
+
+    await fetch(
+      `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/servicios/${ordenServicioId}`,
+      { method: "DELETE" }
+    );
+
+    await cargarDetalle();
+  };
+
   // ✅ NUEVO
 const confirmarOrden = async () => {
   const res = await fetch(
@@ -233,6 +245,7 @@ const confirmarOrden = async () => {
               <th className="px-4 py-2">Cantidad</th>
               <th className="px-4 py-2">Precio</th>
               <th className="px-4 py-2">Subtotal</th>
+              <th className="px-4 py-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -242,6 +255,7 @@ const confirmarOrden = async () => {
                 <td className="px-4 py-2 text-center">{s.cantidad}</td>
                 <td className="px-4 py-2 text-center">${s.precio_unitario}</td>
                 <td className="px-4 py-2 text-center">${s.subtotal}</td>
+                <td className="px-4 py-2 text-center"><button onClick={() => eliminarServicio(s.id)} className="text-red-600 hover:underline"> Eliminar </button> </td>
               </tr>
             ))}
           </tbody>
