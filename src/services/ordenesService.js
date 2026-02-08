@@ -13,7 +13,6 @@ export const crearOrden = async (cliente_id, senia = 0, usuario_id) => {
     body: JSON.stringify({
       cliente_id: Number(cliente_id),
       estado: 'ingresado',
-      fecha_ingreso: new Date().toISOString(),
       fecha_retiro: null,
       senia: Number(senia),
       usuario_id   // ✅ NUEVO
