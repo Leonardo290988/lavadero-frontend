@@ -20,6 +20,8 @@ export default function DetalleOrden() {
   const cargarDetalle = async () => {
     const res = await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/detalle`);
     const data = await res.json();
+    console.log(orden.servicios);
+    
     setOrden(data);
     setSenia(Number(data.senia) || 0);
   };
