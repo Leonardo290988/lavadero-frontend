@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
 
-const formatearSoloFecha = (f) =>
-  new Date(f).toLocaleDateString("es-AR");
-
-const formatearFechaHora = (f) =>
-  new Date(f).toLocaleString("es-AR");
 
 export default function Resumenes() {
 
@@ -199,9 +194,9 @@ export default function Resumenes() {
                     : "white"
               }}
             >
-              <td>{r.fecha_desde ? formatearSoloFecha(r.fecha_desde) : ""}</td>
-              <td>{r.fecha_hasta ? formatearSoloFecha(r.fecha_hasta) : ""}</td>
-              <td>{r.creado_en ? formatearFechaHora(r.creado_en) : ""}</td>
+              <td>{r.fecha_desde || ""}</td>
+              <td>{r.fecha_hasta || ""}</td>
+              <td>{r.creado_en || ""}</td>
               <td>{formato(r.ingresos_efectivo)}</td>
               <td>{formato(r.ingresos_digital || r.transferencias)}</td>
               <td style={{ color: "red" }}>{formato(r.gastos)}</td>
