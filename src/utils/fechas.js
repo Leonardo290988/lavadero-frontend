@@ -1,9 +1,8 @@
 export function formatearFechaHora(fecha) {
   if (!fecha) return "";
 
-  const d = new Date(fecha);
-
-  return d.toLocaleString("es-AR", {
+  return new Date(fecha).toLocaleString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
