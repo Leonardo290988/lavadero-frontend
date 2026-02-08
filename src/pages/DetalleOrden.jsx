@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { formatearFechaHoraISO } from "../utils/fechas";
 
 
 
@@ -150,7 +151,7 @@ const confirmarOrden = async () => {
         <p><b>Estado:</b> {orden.estado}</p>
         <p>
   <b>Ingreso:</b>{" "}
-  {orden.fecha_ingreso}
+  {formatearFechaHoraISO(orden.fecha_ingreso)}
 </p>
 
         <div className="mt-3 flex items-center gap-3">
