@@ -74,33 +74,30 @@ export default function Resumenes() {
 
   // =========================
   // IMPRIMIR
-  // =========================
- // =========================
-// IMPRIMIR
-// =========================
-// =========================
-// IMPRIMIR
-// =========================
-const imprimirSeleccionado = async () => {
+ const imprimirSeleccionado = async () => {
 
   if (!seleccionado) {
     alert("Seleccione un resumen");
     return;
   }
 
+  // ❌ Turno NO se imprime desde acá
+  if (tipo === "turno") {
+    alert("El resumen por turno se imprime al cerrar la caja.");
+    return;
+  }
+
   try {
     const res = await fetch(
-      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
+     ` https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
     );
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error(text);
-      alert("Error al generar el PDF");
+    const data = await res.json();
+
+    if (!data.pdf) {
+      alert("No se pudo generar el PDF");
       return;
     }
-
-    const data = await res.json();
 
     window.open(
       `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
