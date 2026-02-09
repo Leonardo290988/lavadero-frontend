@@ -53,13 +53,35 @@ cargarResumen(data.id);
   // -------------------------
   // CARGAR RESUMEN
   // -------------------------
-  const cargarResumen = async (cajaId) => {
+const cargarResumen = async () => {
+
+  // 👉 TURNO (NO llamar resumenes)
+  if (tipo === "turno") {
+    if (!turnoId) {
+      setDatos([]);
+      return;
+    }
+
     const res = await fetch(
-     ` https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${cajaId}`
+     `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
     );
+
     const data = await res.json();
-    setResumen(data);
-  };
+
+    setDatos([{ ...data, id: turnoId }]);
+    setSeleccionado(null);
+    return;
+  }
+
+  // 👉 DIARIO / SEMANAL / MENSUAL
+  const res = await fetch(
+    `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
+  );
+
+  const data = await res.json();
+  setDatos(data);
+  setSeleccionado(null);
+};
 
   // -------------------------
   // ABRIR CAJA
