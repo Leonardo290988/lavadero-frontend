@@ -39,7 +39,8 @@ if (data.error) {
 }
 
 setCaja(data);
-cargarResumen(data.id);
+cargarResumenTurno(data.id);
+
     } catch (error) {
       console.error("Error cargar caja:", error);
       setCaja(null);
@@ -53,34 +54,19 @@ cargarResumen(data.id);
   // -------------------------
   // CARGAR RESUMEN
   // -------------------------
-const cargarResumen = async () => {
-
-  // 👉 TURNO (NO llamar resumenes)
-  if (tipo === "turno") {
-    if (!turnoId) {
-      setDatos([]);
-      return;
-    }
-
+  // -------------------------
+// CARGAR RESUMEN DEL TURNO
+// -------------------------
+const cargarResumenTurno = async (cajaId) => {
+  try {
     const res = await fetch(
-     `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
+     `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${cajaId}`
     );
-
     const data = await res.json();
-
-    setDatos([{ ...data, id: turnoId }]);
-    setSeleccionado(null);
-    return;
+    setResumen(data);
+  } catch (err) {
+    console.error("Error resumen turno:", err);
   }
-
-  // 👉 DIARIO / SEMANAL / MENSUAL
-  const res = await fetch(
-    `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
-  );
-
-  const data = await res.json();
-  setDatos(data);
-  setSeleccionado(null);
 };
 
   // -------------------------
@@ -133,7 +119,7 @@ const cargarResumen = async () => {
     })
   });
 
-  cargarResumen(caja.id);
+  cargarResumenTurno(caja.id);
 };
 
 
@@ -160,7 +146,7 @@ const registrarGasto = async () => {
     })
   });
 
-  cargarResumen(caja.id);
+  cargarResumenTurno(caja.id);
 };
 
   // -------------------------
@@ -183,7 +169,7 @@ const registrarGasto = async () => {
     }
 
     setCaja(null);
-    setResumen(null);
+   
   };
 
   // =====================================================
