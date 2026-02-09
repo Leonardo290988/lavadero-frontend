@@ -152,25 +152,35 @@ const registrarGasto = async () => {
   // -------------------------
   // CERRAR CAJA
   // -------------------------
-  const cerrarCaja = async () => {
+const cerrarCaja = async () => {
 
-    if (!window.confirm("¿Cerrar caja?")) return;
+  if (!window.confirm("¿Cerrar caja?")) return;
 
-    const res = await fetch(
-     `https://lavadero-backend-production-e1eb.up.railway.app/caja/cerrar/${caja.id}`,
-      { method: "POST" }
+  const res = await fetch(
+    `https://lavadero-backend-production-e1eb.up.railway.app/caja/cerrar/${caja.id}`,
+    { method: "POST" }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Error al cerrar caja");
+    return;
+  }
+
+  // 🖨️ ABRIR PDF AUTOMÁTICAMENTE
+  if (data.pdf) {
+    window.open(
+      `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
+      "_blank"
     );
+  } else {
+    alert("Caja cerrada, pero no se generó el PDF");
+  }
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Error al cerrar caja");
-      return;
-    }
-
-    setCaja(null);
-   
-  };
+  setCaja(null);
+  setResumen(null);
+};
 
   // =====================================================
   // RENDER
