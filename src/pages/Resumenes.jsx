@@ -81,21 +81,21 @@ export default function Resumenes() {
     return;
   }
 
-  // ❌ Turno NO se imprime desde acá
+  // ❌ El resumen de TURNO no se imprime desde acá
   if (tipo === "turno") {
-    alert("El resumen por turno se imprime al cerrar la caja.");
+    alert("El resumen de turno se imprime al cerrar la caja");
     return;
   }
 
   try {
     const res = await fetch(
-     ` https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
+      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
     );
 
     const data = await res.json();
 
     if (!data.pdf) {
-      alert("No se pudo generar el PDF");
+      alert("Error al generar el PDF");
       return;
     }
 
@@ -104,9 +104,9 @@ export default function Resumenes() {
       "_blank"
     );
 
-  } catch (error) {
-    console.error(error);
-    alert("Error al imprimir PDF");
+  } catch (err) {
+    console.error(err);
+    alert("Error al imprimir");
   }
 };
 
