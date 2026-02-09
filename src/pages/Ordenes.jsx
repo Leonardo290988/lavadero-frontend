@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatearFechaHoraISO } from "../utils/fechas";
 
-
-
-
 export default function Ordenes() {
   const [ordenes, setOrdenes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +9,9 @@ export default function Ordenes() {
 
   const cargarOrdenes = async () => {
     try {
-      const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/ordenes/abiertas");
+      const res = await fetch(
+        "https://lavadero-backend-production-e1eb.up.railway.app/ordenes/abiertas"
+      );
       const data = await res.json();
       setOrdenes(data);
     } catch (error) {
@@ -26,15 +25,23 @@ export default function Ordenes() {
     if (!confirm(`¿Cerrar la orden #${id}?`)) return;
 
     try {
-      const res = await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/cerrar`, {
-        method: "PUT",
-      });
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/cerrar`,
+        {
+          method: "PUT",
+        }
+      );
 
       const data = await res.json();
 
       if (!res.ok) {
         alert(data.error || "Error al cerrar orden");
         return;
+      }
+
+      // ✅ NUEVO: abrir WhatsApp si viene la URL
+      if (data.whatsapp_url) {
+        window.open(data.whatsapp_url, "_blank");
       }
 
       cargarOrdenes();
@@ -67,10 +74,7 @@ export default function Ordenes() {
                 <th className="px-4 py-3 text-left">Cliente</th>
                 <th className="px-4 py-3 text-left">Fecha ingreso</th>
                 <th className="px-4 py-3 text-left">Total</th>
-
-                {/* ✅ NUEVA COLUMNA */}
                 <th className="px-4 py-3 text-center">Envío</th>
-
                 <th className="px-4 py-3 text-center">Acciones</th>
               </tr>
             </thead>
@@ -81,9 +85,8 @@ export default function Ordenes() {
                   <td className="px-4 py-3">#{o.id}</td>
                   <td className="px-4 py-3">{o.cliente}</td>
                   <td className="px-4 py-3">
-                  {formatearFechaHoraISO(o.fecha_ingreso)}
-</td>
-
+                    {formatearFechaHoraISO(o.fecha_ingreso)}
+                  </td>
                   <td className="px-4 py-3 font-semibold">
                     $
                     {Math.max(
@@ -91,15 +94,12 @@ export default function Ordenes() {
                       0
                     )}
                   </td>
-
-                  {/* ✅ NUEVO DATO */}
                   <td
                     className="px-4 py-3 text-center font-semibold"
                     style={{ color: o.tiene_envio ? "green" : "gray" }}
                   >
                     {o.tiene_envio ? "SI" : "NO"}
                   </td>
-
                   <td className="px-4 py-3 flex gap-2 justify-center">
                     <button
                       onClick={() => navigate(`/ordenes/${o.id}`)}
