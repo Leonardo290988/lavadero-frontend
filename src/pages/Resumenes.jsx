@@ -78,6 +78,9 @@ export default function Resumenes() {
  // =========================
 // IMPRIMIR
 // =========================
+// =========================
+// IMPRIMIR
+// =========================
 const imprimirSeleccionado = async () => {
 
   if (!seleccionado) {
@@ -87,15 +90,17 @@ const imprimirSeleccionado = async () => {
 
   try {
     const res = await fetch(
-      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/pdf/${seleccionado}`
+      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
     );
 
-    const data = await res.json();
-
     if (!res.ok) {
-      alert(data.error || "Error al generar PDF");
+      const text = await res.text();
+      console.error(text);
+      alert("Error al generar el PDF");
       return;
     }
+
+    const data = await res.json();
 
     window.open(
       `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
