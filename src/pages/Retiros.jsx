@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Retiros.css";
+import { formatearFechaHoraISO } from "../utils/fechas";
 
 function Retiros() {
 
@@ -73,7 +74,7 @@ function Retiros() {
               <td>{r.cliente}</td>
               <td>{r.telefono}</td>
               <td className="total">${r.total}</td>
-              <td>{new Date(r.fecha_retiro).toLocaleString("es-AR", { hour12: false })}</td>
+              <td>{formatearFechaHoraISO(r.fecha_retiro)}</td>
               <td>{r.usuario}</td> {/* ✅ AGREGADO */}
             </tr>
           ))}
