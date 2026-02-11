@@ -15,14 +15,27 @@ export default function SolicitudesRetiros() {
   }, []);
 
   const aceptar = async (id) => {
-    if(!window.confirm("¿Aceptar solicitud?")) return;
+  if (!window.confirm("¿Aceptar solicitud?")) return;
 
-    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/retiros/${id}/aceptar`, {
-      method:"PUT"
-    });
+  const res = await fetch(
+    `https://lavadero-backend-production-e1eb.up.railway.app/retiros/${id}/aceptar`,
+    {
+      method: "PUT"
+    }
+  );
 
-    cargar();
-  };
+  const data = await res.json();
+
+  // 👇 ABRIR PDF SI EXISTE
+  if (data.pdf) {
+    window.open(
+      `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
+      "_blank"
+    );
+  }
+
+  cargar();
+};
 
   const rechazar = async (id) => {
     if(!window.confirm("¿Rechazar solicitud?")) return;
