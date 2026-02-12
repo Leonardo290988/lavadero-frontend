@@ -24,7 +24,7 @@ export default function SolicitudesRetiros() {
       endpoint = "aceptar";
     } 
     else if (retiro.estado === "aceptado") {
-      endpoint = "en-camino";
+      endpoint = "encamino";   // 👈 CORREGIDO (sin guion)
     } 
     else if (retiro.estado === "en_camino") {
       endpoint = "retirado";
@@ -37,10 +37,15 @@ export default function SolicitudesRetiros() {
       { method: "PUT" }
     );
 
+    if (!res.ok) {
+      console.error("Error:", await res.text());
+      return;
+    }
+
     const data = await res.json();
 
-    // 👇 Abrir PDF si viene (solo cuando se acepta)
-    if (data.pdf) {
+    // 👇 Abrir PDF SOLO cuando se acepta
+    if (endpoint === "aceptar" && data.pdf) {
       window.open(`${API}${data.pdf}`, "_blank");
     }
 
@@ -48,10 +53,10 @@ export default function SolicitudesRetiros() {
   };
 
   const rechazar = async (id) => {
-    if(!window.confirm("¿Rechazar solicitud?")) return;
+    if (!window.confirm("¿Rechazar solicitud?")) return;
 
     await fetch(`${API}/retiros/${id}/rechazar`, {
-      method:"PUT"
+      method: "PUT"
     });
 
     cargar();
@@ -98,13 +103,12 @@ export default function SolicitudesRetiros() {
               <td className="p-2">{r.direccion}</td>
               <td className="p-2">${r.precio}</td>
 
-              <td className="p-2">
+              <td className="p-2 font-semibold">
                 {r.estado}
               </td>
 
               <td className="p-2 flex gap-2">
 
-                {/* BOTÓN DINÁMICO */}
                 {r.estado !== "retirado" && (
                   <button
                     onClick={() => manejarEstado(r)}
@@ -116,7 +120,6 @@ export default function SolicitudesRetiros() {
                   </button>
                 )}
 
-                {/* RECHAZAR SOLO SI ESTÁ PENDIENTE */}
                 {r.estado === "pendiente" && (
                   <button
                     onClick={() => rechazar(r.id)}
