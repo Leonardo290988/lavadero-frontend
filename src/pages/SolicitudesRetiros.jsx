@@ -24,7 +24,7 @@ export default function SolicitudesRetiros() {
       endpoint = "aceptar";
     } 
     else if (retiro.estado === "aceptado") {
-      endpoint = "encamino";   // 👈 CORREGIDO (sin guion)
+      endpoint = "en-camino";   // 👈 CORREGIDO (sin guion)
     } 
     else if (retiro.estado === "en_camino") {
       endpoint = "retirado";
