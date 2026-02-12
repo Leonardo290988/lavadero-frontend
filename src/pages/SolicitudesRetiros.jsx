@@ -4,8 +4,10 @@ export default function SolicitudesRetiros() {
 
   const [retiros, setRetiros] = useState([]);
 
+  const API = "https://lavadero-backend-production-e1eb.up.railway.app";
+
   const cargar = async () => {
-    const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/retiros/pendientes");
+    const res = await fetch(`${API}/retiros/pendientes`);
     const data = await res.json();
     setRetiros(data);
   };
@@ -14,33 +16,41 @@ export default function SolicitudesRetiros() {
     cargar();
   }, []);
 
-  const aceptar = async (id) => {
-  if (!window.confirm("¿Aceptar solicitud?")) return;
+  const manejarEstado = async (retiro) => {
 
-  const res = await fetch(
-    `https://lavadero-backend-production-e1eb.up.railway.app/retiros/${id}/aceptar`,
-    {
-      method: "PUT"
+    let endpoint = "";
+
+    if (retiro.estado === "pendiente") {
+      endpoint = "aceptar";
+    } 
+    else if (retiro.estado === "aceptado") {
+      endpoint = "en-camino";
+    } 
+    else if (retiro.estado === "en_camino") {
+      endpoint = "retirado";
     }
-  );
 
-  const data = await res.json();
+    if (!endpoint) return;
 
-  // 👇 ABRIR PDF SI EXISTE
-  if (data.pdf) {
-    window.open(
-      `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
-      "_blank"
+    const res = await fetch(
+      `${API}/retiros/${retiro.id}/${endpoint}`,
+      { method: "PUT" }
     );
-  }
 
-  cargar();
-};
+    const data = await res.json();
+
+    // 👇 Abrir PDF si viene (solo cuando se acepta)
+    if (data.pdf) {
+      window.open(`${API}${data.pdf}`, "_blank");
+    }
+
+    cargar();
+  };
 
   const rechazar = async (id) => {
     if(!window.confirm("¿Rechazar solicitud?")) return;
 
-    await fetch(`https://lavadero-backend-production-e1eb.up.railway.app/retiros/${id}/rechazar`, {
+    await fetch(`${API}/retiros/${id}/rechazar`, {
       method:"PUT"
     });
 
@@ -65,10 +75,10 @@ export default function SolicitudesRetiros() {
             <th className="p-2 text-left">ID</th>
             <th className="p-2 text-left">Tipo</th>
             <th className="p-2 text-left">Cliente</th>
-            <th className="p-2 text-left">Orden</th>
             <th className="p-2 text-left">Zona</th>
             <th className="p-2 text-left">Dirección</th>
             <th className="p-2 text-left">Precio</th>
+            <th className="p-2 text-left">Estado</th>
             <th className="p-2 text-left">Acciones</th>
           </tr>
         </thead>
@@ -76,6 +86,7 @@ export default function SolicitudesRetiros() {
         <tbody>
           {retiros.map(r => (
             <tr key={r.id} className="border-t">
+
               <td className="p-2">{r.id}</td>
 
               <td className="p-2 font-semibold">
@@ -83,26 +94,40 @@ export default function SolicitudesRetiros() {
               </td>
 
               <td className="p-2">{r.cliente}</td>
-              <td className="p-2">#{r.orden_id}</td>
               <td className="p-2">Zona {r.zona}</td>
               <td className="p-2">{r.direccion}</td>
               <td className="p-2">${r.precio}</td>
 
-              <td className="p-2 flex gap-2">
-                <button
-                  onClick={()=>aceptar(r.id)}
-                  className="bg-green-600 text-white px-3 py-1 rounded"
-                >
-                  Aceptar
-                </button>
-
-                <button
-                  onClick={()=>rechazar(r.id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded"
-                >
-                  Rechazar
-                </button>
+              <td className="p-2">
+                {r.estado}
               </td>
+
+              <td className="p-2 flex gap-2">
+
+                {/* BOTÓN DINÁMICO */}
+                {r.estado !== "retirado" && (
+                  <button
+                    onClick={() => manejarEstado(r)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded"
+                  >
+                    {r.estado === "pendiente" && "Aceptar"}
+                    {r.estado === "aceptado" && "En camino"}
+                    {r.estado === "en_camino" && "Retirado"}
+                  </button>
+                )}
+
+                {/* RECHAZAR SOLO SI ESTÁ PENDIENTE */}
+                {r.estado === "pendiente" && (
+                  <button
+                    onClick={() => rechazar(r.id)}
+                    className="bg-red-600 text-white px-3 py-1 rounded"
+                  >
+                    Rechazar
+                  </button>
+                )}
+
+              </td>
+
             </tr>
           ))}
         </tbody>
