@@ -9,7 +9,9 @@ export default function Envios() {
 
   const cargarEnvios = async () => {
     try {
-      const res = await fetch("https://lavadero-backend-production-e1eb.up.railway.app/envios/pendientes");
+      const res = await fetch(
+        "https://lavadero-backend-production-e1eb.up.railway.app/envios/pendientes"
+      );
       const data = await res.json();
       setEnvios(data);
     } catch (err) {
@@ -23,6 +25,39 @@ export default function Envios() {
   useEffect(() => {
     cargarEnvios();
   }, []);
+
+  // 🔥 NUEVO: Marcar entregado
+  const marcarEntregado = async (id) => {
+    if (!confirm("¿Confirmar entrega del envío?")) return;
+
+    try {
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/envios/${id}/entregar`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            metodo_pago: "Efectivo", // podés cambiarlo si querés selector después
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error al marcar entregado");
+        return;
+      }
+
+      alert("✅ Envío entregado correctamente");
+      cargarEnvios(); // refresca lista
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión con el servidor");
+    }
+  };
 
   if (loading) return <p className="p-6">Cargando envíos...</p>;
 
@@ -42,7 +77,7 @@ export default function Envios() {
                 <th className="px-4 py-3">Dirección</th>
                 <th className="px-4 py-3">Zona</th>
                 <th className="px-4 py-3">Orden</th>
-                <th className="px-4 py-3 text-center">Detalle</th>
+                <th className="px-4 py-3 text-center">Acciones</th>
               </tr>
             </thead>
 
@@ -57,18 +92,25 @@ export default function Envios() {
                     {e.orden_id ? `#${e.orden_id}` : "-"}
                   </td>
 
-                  {/* ✅ SOLO VER ORDEN */}
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3 text-center flex gap-2 justify-center">
                     {e.orden_id && (
-                      <button
-                        onClick={() => navigate(`/ordenes/${e.orden_id}`)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                      >
-                        Ver orden
-                      </button>
+                      <>
+                        <button
+                          onClick={() => navigate(`/ordenes/${e.orden_id}`)}
+                          className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                        >
+                          Ver orden
+                        </button>
+
+                        <button
+                          onClick={() => marcarEntregado(e.id)}
+                          className="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
+                        >
+                          Entregado
+                        </button>
+                      </>
                     )}
                   </td>
-
                 </tr>
               ))}
             </tbody>
