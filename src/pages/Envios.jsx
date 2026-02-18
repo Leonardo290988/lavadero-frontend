@@ -5,6 +5,10 @@ export default function Envios() {
   const [envios, setEnvios] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔥 nuevos estados
+  const [envioSeleccionado, setEnvioSeleccionado] = useState(null);
+  const [metodoPago, setMetodoPago] = useState("Efectivo");
+
   const navigate = useNavigate();
 
   const cargarEnvios = async () => {
@@ -26,20 +30,18 @@ export default function Envios() {
     cargarEnvios();
   }, []);
 
-  // 🔥 NUEVO: Marcar entregado
-  const marcarEntregado = async (id) => {
-    if (!confirm("¿Confirmar entrega del envío?")) return;
-
+  // 🔥 Confirmar entrega
+  const confirmarEntrega = async () => {
     try {
       const res = await fetch(
-        `https://lavadero-backend-production-e1eb.up.railway.app/envios/${id}/entregar`,
+        `https://lavadero-backend-production-e1eb.up.railway.app/envios/${envioSeleccionado}/entregar`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            metodo_pago: "Efectivo", // podés cambiarlo si querés selector después
+            metodo_pago: metodoPago,
           }),
         }
       );
@@ -52,7 +54,9 @@ export default function Envios() {
       }
 
       alert("✅ Envío entregado correctamente");
-      cargarEnvios(); // refresca lista
+      setEnvioSeleccionado(null);
+      cargarEnvios();
+
     } catch (error) {
       console.error(error);
       alert("Error de conexión con el servidor");
@@ -103,7 +107,7 @@ export default function Envios() {
                         </button>
 
                         <button
-                          onClick={() => marcarEntregado(e.id)}
+                          onClick={() => setEnvioSeleccionado(e.id)}
                           className="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
                         >
                           Entregado
@@ -115,6 +119,44 @@ export default function Envios() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* 🔥 MODAL SIMPLE */}
+      {envioSeleccionado && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-80">
+            <h3 className="text-lg font-bold mb-4">
+              Confirmar entrega
+            </h3>
+
+            <select
+              value={metodoPago}
+              onChange={(e) => setMetodoPago(e.target.value)}
+              className="w-full border p-2 rounded mb-4"
+            >
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia/MercadoPago">
+                Transferencia / MercadoPago
+              </option>
+            </select>
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setEnvioSeleccionado(null)}
+                className="px-3 py-1 bg-gray-400 text-white rounded"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={confirmarEntrega}
+                className="px-3 py-1 bg-emerald-600 text-white rounded"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
