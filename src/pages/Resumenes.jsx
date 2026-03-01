@@ -200,10 +200,15 @@ export default function Resumenes() {
           {datos.map((r) => (
             <tr
               key={r.id}
-              onClick={() => {
-                setSeleccionado(r.id);
-                cargarMovimientos(r.id);
-              }}
+             onClick={() => {
+  setSeleccionado(r.id);
+
+  if (tipo === "turno") {
+    cargarMovimientos(r.id);
+  } else {
+    setMovimientos([]);
+  }
+}}
               style={{
                 ...fila,
                 background:
@@ -244,7 +249,7 @@ export default function Resumenes() {
       {/* =========================
           DETALLE MOVIMIENTOS
          ========================= */}
-      {movimientos.length > 0 && (
+      {tipo === "turno" && movimientos.length > 0 && (
         <div style={{ marginTop: 40 }}>
           <h3>Detalle de movimientos</h3>
 
