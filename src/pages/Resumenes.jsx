@@ -8,7 +8,6 @@ export default function Resumenes() {
   const [turnos, setTurnos] = useState([]);
   const [turnoId, setTurnoId] = useState("");
 
-  const [seleccionado, setSeleccionado] = useState(null);
   const [movimientos, setMovimientos] = useState([]);
 
   // =========================
@@ -34,8 +33,6 @@ export default function Resumenes() {
 
       const data = await res.json();
       setDatos([{ ...data, id: turnoId }]);
-      setSeleccionado(null);
-      setMovimientos([]);
       return;
     }
 
@@ -45,7 +42,6 @@ export default function Resumenes() {
 
     const data = await res.json();
     setDatos(data);
-    setSeleccionado(null);
     setMovimientos([]);
   };
 
@@ -69,6 +65,13 @@ export default function Resumenes() {
     cargarResumen();
   }, [tipo, turnoId]);
 
+  // 🔥 NUEVO: cargar movimientos automáticamente
+  useEffect(() => {
+    if (tipo === "turno" && turnoId) {
+      cargarMovimientos(turnoId);
+    }
+  }, [turnoId, tipo]);
+
   // =========================
   // FORMATO
   // =========================
@@ -86,11 +89,6 @@ export default function Resumenes() {
   // =========================
   const imprimirSeleccionado = async () => {
 
-    if (!seleccionado) {
-      alert("Seleccione un resumen");
-      return;
-    }
-
     if (tipo === "turno") {
       alert("El resumen de turno se imprime al cerrar la caja");
       return;
@@ -98,7 +96,7 @@ export default function Resumenes() {
 
     try {
       const res = await fetch(
-        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
+        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${datos[0]?.id}`
       );
 
       const data = await res.json();
@@ -198,25 +196,7 @@ export default function Resumenes() {
 
         <tbody>
           {datos.map((r) => (
-            <tr
-              key={r.id}
-             onClick={() => {
-  setSeleccionado(r.id);
-
-  if (tipo === "turno") {
-    cargarMovimientos(r.id);
-  } else {
-    setMovimientos([]);
-  }
-}}
-              style={{
-                ...fila,
-                background:
-                  seleccionado === r.id
-                    ? "#dbeafe"
-                    : "white"
-              }}
-            >
+            <tr key={r.id} style={{ ...fila }}>
               <td>{r.fecha_desde || ""}</td>
               <td>{r.fecha_hasta || ""}</td>
               <td>{r.creado_en || ""}</td>
@@ -231,18 +211,6 @@ export default function Resumenes() {
             </tr>
           ))}
         </tbody>
-
-        <tfoot>
-          <tr style={{ background: "#f3f4f6", fontWeight: "bold" }}>
-            <td colSpan="3">TOTALES</td>
-            <td>{formato(total("ingresos_efectivo"))}</td>
-            <td>{formato(total("ingresos_digital") + total("transferencias"))}</td>
-            <td>{formato(total("gastos"))}</td>
-            <td>{formato(total("guardado"))}</td>
-            <td>{formato(total("total_ventas"))}</td>
-            <td>{formato(total("caja_final"))}</td>
-          </tr>
-        </tfoot>
 
       </table>
 
@@ -300,6 +268,5 @@ const th = {
 };
 
 const fila = {
-  borderBottom: "1px solid #ddd",
-  cursor: "pointer"
+  borderBottom: "1px solid #ddd"
 };
