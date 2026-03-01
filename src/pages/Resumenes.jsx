@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-
 export default function Resumenes() {
 
   const [tipo, setTipo] = useState("diario");
@@ -10,6 +9,7 @@ export default function Resumenes() {
   const [turnoId, setTurnoId] = useState("");
 
   const [seleccionado, setSeleccionado] = useState(null);
+  const [movimientos, setMovimientos] = useState([]);
 
   // =========================
   // CARGAR TURNOS
@@ -27,22 +27,18 @@ export default function Resumenes() {
   // =========================
   const cargarResumen = async () => {
 
-    // 👉 TURNO
     if (tipo === "turno" && turnoId) {
-
       const res = await fetch(
         `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
       );
 
       const data = await res.json();
-
-      // le inyectamos id válido
       setDatos([{ ...data, id: turnoId }]);
       setSeleccionado(null);
+      setMovimientos([]);
       return;
     }
 
-    // 👉 OTROS
     const res = await fetch(
       `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
     );
@@ -50,6 +46,19 @@ export default function Resumenes() {
     const data = await res.json();
     setDatos(data);
     setSeleccionado(null);
+    setMovimientos([]);
+  };
+
+  // =========================
+  // CARGAR MOVIMIENTOS DETALLE
+  // =========================
+  const cargarMovimientos = async (id) => {
+    const res = await fetch(
+      `https://lavadero-backend-production-e1eb.up.railway.app/caja/movimientos/${id}`
+    );
+
+    const data = await res.json();
+    setMovimientos(data);
   };
 
   useEffect(() => {
@@ -74,41 +83,41 @@ export default function Resumenes() {
 
   // =========================
   // IMPRIMIR
- const imprimirSeleccionado = async () => {
+  // =========================
+  const imprimirSeleccionado = async () => {
 
-  if (!seleccionado) {
-    alert("Seleccione un resumen");
-    return;
-  }
-
-  // ❌ El resumen de TURNO no se imprime desde acá
-  if (tipo === "turno") {
-    alert("El resumen de turno se imprime al cerrar la caja");
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
-    );
-
-    const data = await res.json();
-
-    if (!data.pdf) {
-      alert("Error al generar el PDF");
+    if (!seleccionado) {
+      alert("Seleccione un resumen");
       return;
     }
 
-    window.open(
-      `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
-      "_blank"
-    );
+    if (tipo === "turno") {
+      alert("El resumen de turno se imprime al cerrar la caja");
+      return;
+    }
 
-  } catch (err) {
-    console.error(err);
-    alert("Error al imprimir");
-  }
-};
+    try {
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${seleccionado}`
+      );
+
+      const data = await res.json();
+
+      if (!data.pdf) {
+        alert("Error al generar el PDF");
+        return;
+      }
+
+      window.open(
+        `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
+        "_blank"
+      );
+
+    } catch (err) {
+      console.error(err);
+      alert("Error al imprimir");
+    }
+  };
 
   // =========================
   // UI
@@ -191,7 +200,10 @@ export default function Resumenes() {
           {datos.map((r) => (
             <tr
               key={r.id}
-              onClick={() => setSeleccionado(r.id)}
+              onClick={() => {
+                setSeleccionado(r.id);
+                cargarMovimientos(r.id);
+              }}
               style={{
                 ...fila,
                 background:
@@ -228,6 +240,50 @@ export default function Resumenes() {
         </tfoot>
 
       </table>
+
+      {/* =========================
+          DETALLE MOVIMIENTOS
+         ========================= */}
+      {movimientos.length > 0 && (
+        <div style={{ marginTop: 40 }}>
+          <h3>Detalle de movimientos</h3>
+
+          <table style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            background: "#fff",
+            marginTop: 10
+          }}>
+
+            <thead>
+              <tr style={{ background: "#374151", color: "white" }}>
+                <th style={th}>Fecha</th>
+                <th style={th}>Tipo</th>
+                <th style={th}>Descripción</th>
+                <th style={th}>Forma Pago</th>
+                <th style={th}>Monto</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {movimientos.map((m, i) => (
+                <tr key={i} style={{ borderBottom: "1px solid #ddd" }}>
+                  <td>{m.fecha}</td>
+                  <td>{m.tipo}</td>
+                  <td>{m.descripcion}</td>
+                  <td>{m.forma_pago}</td>
+                  <td style={{
+                    color: m.tipo === "gasto" ? "red" : "green"
+                  }}>
+                    {formato(m.monto)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
+        </div>
+      )}
 
     </div>
   );
