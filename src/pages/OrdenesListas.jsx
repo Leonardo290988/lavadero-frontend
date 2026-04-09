@@ -15,6 +15,7 @@ export default function OrdenesListas() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [metodoPago, setMetodoPago] = useState("Efectivo");
+  const [reimprimiendo, setReimprimiendo] = useState(null); // guarda el id que se está reimprimiendo
 
   const cargarOrdenes = async () => {
     try {
@@ -71,6 +72,28 @@ export default function OrdenesListas() {
     }
   };
 
+  const reimprimirOrden = async (id) => {
+    setReimprimiendo(id);
+    try {
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/reimprimir-orden`,
+        { method: "POST" }
+      );
+      if (res.ok) {
+        window.open(
+          `https://lavadero-backend-production-e1eb.up.railway.app/pdf/ordenes/orden_${id}.pdf?t=${Date.now()}`,
+          "_blank"
+        );
+      } else {
+        alert("Error al reimprimir ticket");
+      }
+    } catch (e) {
+      alert("Error de conexión");
+    } finally {
+      setReimprimiendo(null);
+    }
+  };
+
   useEffect(() => {
     cargarOrdenes();
   }, []);
@@ -124,6 +147,14 @@ export default function OrdenesListas() {
                       className="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700"
                     >
                       Retirar
+                    </button>
+
+                    <button
+                      onClick={() => reimprimirOrden(o.id)}
+                      disabled={reimprimiendo === o.id}
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50"
+                    >
+                      {reimprimiendo === o.id ? "..." : "🖨️ Ticket"}
                     </button>
                   </td>
                 </tr>
