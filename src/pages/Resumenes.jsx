@@ -1,272 +1,247 @@
 import { useEffect, useState } from "react";
 
+const API = "https://lavadero-backend-production-e1eb.up.railway.app";
+
 export default function Resumenes() {
 
   const [tipo, setTipo] = useState("diario");
   const [datos, setDatos] = useState([]);
-
   const [turnos, setTurnos] = useState([]);
   const [turnoId, setTurnoId] = useState("");
-
   const [movimientos, setMovimientos] = useState([]);
+  const [imprimiendo, setImprimiendo] = useState(null); // id del resumen que se está imprimiendo
 
   // =========================
   // CARGAR TURNOS
   // =========================
   const cargarTurnos = async () => {
-    const res = await fetch(
-      "https://lavadero-backend-production-e1eb.up.railway.app/caja/turnos"
-    );
+    const res = await fetch(`${API}/caja/turnos`);
     const data = await res.json();
     setTurnos(data);
   };
 
   // =========================
-  // CARGAR RESUMENES
+  // CARGAR RESÚMENES
   // =========================
   const cargarResumen = async () => {
+    setDatos([]);
+    setMovimientos([]);
 
-    if (tipo === "turno" && turnoId) {
-      const res = await fetch(
-        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumen/turno/${turnoId}`
-      );
-
+    if (tipo === "turno") {
+      // Cargar todos los turnos como lista
+      const res = await fetch(`${API}/caja/turnos`);
       const data = await res.json();
-      setDatos([{ ...data, id: turnoId }]);
+      setTurnos(data);
+      // Si hay turno seleccionado, traer su detalle
+      if (turnoId) {
+        const res2 = await fetch(`${API}/caja/resumen/turno/${turnoId}`);
+        const d = await res2.json();
+        setDatos([{ ...d, id: turnoId, _caja_id: turnoId }]);
+        cargarMovimientos(turnoId);
+      }
       return;
     }
 
-    const res = await fetch(
-      `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/${tipo}s`
-    );
-
+    const res = await fetch(`${API}/caja/resumenes/${tipo}s`);
     const data = await res.json();
     setDatos(data);
-    setMovimientos([]);
   };
 
   // =========================
-  // CARGAR MOVIMIENTOS DETALLE
+  // CARGAR MOVIMIENTOS
   // =========================
   const cargarMovimientos = async (id) => {
-    const res = await fetch(
-      `https://lavadero-backend-production-e1eb.up.railway.app/caja/movimientos/${id}`
-    );
-
+    const res = await fetch(`${API}/caja/movimientos/${id}`);
     const data = await res.json();
     setMovimientos(data);
   };
 
-  useEffect(() => {
-    cargarTurnos();
-  }, []);
-
-  useEffect(() => {
-    cargarResumen();
-  }, [tipo, turnoId]);
-
-  // 🔥 NUEVO: cargar movimientos automáticamente
-  useEffect(() => {
-    if (tipo === "turno" && turnoId) {
-      cargarMovimientos(turnoId);
-    }
-  }, [turnoId, tipo]);
+  useEffect(() => { cargarTurnos(); }, []);
+  useEffect(() => { cargarResumen(); }, [tipo, turnoId]);
 
   // =========================
-  // FORMATO
+  // IMPRIMIR UN RESUMEN
   // =========================
-  const formato = (n) =>
-    Number(n || 0).toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS"
-    });
-
-  const total = (campo) =>
-    datos.reduce((acc, d) => acc + Number(d[campo] || 0), 0);
-
-  // =========================
-  // IMPRIMIR
-  // =========================
-  const imprimirSeleccionado = async () => {
-
-    if (tipo === "turno") {
-      alert("El resumen de turno se imprime al cerrar la caja");
-      return;
-    }
+  const imprimir = async (resumen) => {
+    setImprimiendo(resumen.id || resumen._caja_id);
 
     try {
-      const res = await fetch(
-        `https://lavadero-backend-production-e1eb.up.railway.app/caja/resumenes/imprimir/${datos[0]?.id}`
-      );
+      let url;
 
-      const data = await res.json();
-
-      if (!data.pdf) {
-        alert("Error al generar el PDF");
-        return;
+      if (tipo === "turno") {
+        // Usar el caja_id para imprimir turno
+        const cajaId = resumen._caja_id || resumen.id;
+        const res = await fetch(`${API}/caja/resumenes/imprimir-turno/${cajaId}`);
+        const data = await res.json();
+        if (!data.pdf) { alert("Error al generar el PDF"); return; }
+        url = `${API}${data.pdf}?t=${Date.now()}`;
+      } else {
+        // Para diario/semanal/mensual usar el id del resumen guardado
+        const res = await fetch(`${API}/caja/resumenes/imprimir/${resumen.id}`);
+        const data = await res.json();
+        if (!data.pdf) { alert("Error al generar el PDF"); return; }
+        url = `${API}${data.pdf}?t=${Date.now()}`;
       }
 
-      window.open(
-        `https://lavadero-backend-production-e1eb.up.railway.app${data.pdf}`,
-        "_blank"
-      );
+      window.open(url, "_blank");
 
     } catch (err) {
       console.error(err);
       alert("Error al imprimir");
+    } finally {
+      setImprimiendo(null);
     }
   };
+
+  // =========================
+  // FORMATO
+  // =========================
+  const fmt = (n) =>
+    Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
 
   // =========================
   // UI
   // =========================
   return (
-    <div style={{ padding: 30 }}>
+    <div className="p-6">
 
-      <h2 style={{ fontSize: 26, fontWeight: "bold", marginBottom: 20 }}>
-        📊 Resúmenes
-      </h2>
+      <h2 className="text-2xl font-bold mb-6">📊 Resúmenes</h2>
 
-      <button
-        onClick={imprimirSeleccionado}
-        style={{
-          padding: "10px 18px",
-          background: "#2563eb",
-          color: "white",
-          border: "none",
-          borderRadius: 6,
-          cursor: "pointer",
-          fontSize: 15,
-          marginBottom: 15,
-          marginRight: 15
-        }}
-      >
-        🖨 Imprimir PDF
-      </button>
+      {/* Selector de tipo */}
+      <div className="flex gap-3 mb-6 flex-wrap">
+        {["diario", "semanal", "mensual", "turno"].map((t) => (
+          <button
+            key={t}
+            onClick={() => { setTipo(t); setTurnoId(""); }}
+            className={`px-4 py-2 rounded font-semibold capitalize ${
+              tipo === t
+                ? "bg-blue-600 text-white"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            {t === "turno" ? "Por turno" : t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        ))}
 
-      <select
-        value={tipo}
-        onChange={(e) => setTipo(e.target.value)}
-        style={{ padding: 10, fontSize: 16, marginRight: 10 }}
-      >
-        <option value="diario">Diario</option>
-        <option value="semanal">Semanal</option>
-        <option value="mensual">Mensual</option>
-        <option value="turno">Por turno</option>
-      </select>
+        {tipo === "turno" && (
+          <select
+            value={turnoId}
+            onChange={(e) => setTurnoId(e.target.value)}
+            className="border rounded px-3 py-2 text-sm"
+          >
+            <option value="">Seleccione turno</option>
+            {turnos.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.fecha} — Turno {t.turno}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
-      {tipo === "turno" && (
-        <select
-          value={turnoId}
-          onChange={(e) => setTurnoId(e.target.value)}
-          style={{ padding: 10 }}
-        >
-          <option value="">Seleccione turno</option>
-          {turnos.map(t => (
-            <option key={t.id} value={t.id}>
-              {t.fecha} - Turno {t.turno}
-            </option>
-          ))}
-        </select>
-      )}
-
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          background: "#fff",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          marginTop: 20
-        }}
-      >
-
-        <thead>
-          <tr style={{ background: "#1f2937", color: "white" }}>
-            <th style={th}>Desde</th>
-            <th style={th}>Hasta</th>
-            <th style={th}>Fecha / Hora</th>
-            <th style={th}>Efectivo</th>
-            <th style={th}>Digital</th>
-            <th style={th}>Gastos</th>
-            <th style={th}>Guardado</th>
-            <th style={th}>Ventas</th>
-            <th style={th}>Caja Final</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {datos.map((r) => (
-            <tr key={r.id} style={{ ...fila }}>
-              <td>{r.fecha_desde || ""}</td>
-              <td>{r.fecha_hasta || ""}</td>
-              <td>{r.creado_en || ""}</td>
-              <td>{formato(r.ingresos_efectivo)}</td>
-              <td>{formato(r.ingresos_digital || r.transferencias)}</td>
-              <td style={{ color: "red" }}>{formato(r.gastos)}</td>
-              <td style={{ color: "blue" }}>{formato(r.guardado)}</td>
-              <td style={{ fontWeight: "bold" }}>{formato(r.total_ventas)}</td>
-              <td style={{ fontWeight: "bold" }}>
-                {formato(r.caja_final || r.efectivo_final)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-
-      </table>
-
-      {/* =========================
-          DETALLE MOVIMIENTOS
-         ========================= */}
-      {tipo === "turno" && movimientos.length > 0 && (
-        <div style={{ marginTop: 40 }}>
-          <h3>Detalle de movimientos</h3>
-
-          <table style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            background: "#fff",
-            marginTop: 10
-          }}>
-
-            <thead>
-              <tr style={{ background: "#374151", color: "white" }}>
-                <th style={th}>Fecha</th>
-                <th style={th}>Tipo</th>
-                <th style={th}>Descripción</th>
-                <th style={th}>Forma Pago</th>
-                <th style={th}>Monto</th>
+      {/* Tabla */}
+      {datos.length === 0 ? (
+        <div className="bg-white rounded shadow p-6 text-gray-500">
+          {tipo === "turno" && !turnoId
+            ? "Seleccioná un turno para ver el resumen"
+            : "No hay resúmenes para mostrar"}
+        </div>
+      ) : (
+        <div className="overflow-x-auto bg-white rounded-xl shadow">
+          <table className="min-w-full text-sm">
+            <thead className="bg-slate-800 text-white">
+              <tr>
+                {tipo !== "turno" && (
+                  <>
+                    <th className="px-4 py-3 text-left">Fecha</th>
+                    <th className="px-4 py-3 text-left">Generado</th>
+                  </>
+                )}
+                {tipo === "turno" && (
+                  <>
+                    <th className="px-4 py-3 text-left">Fecha</th>
+                    <th className="px-4 py-3 text-left">Turno</th>
+                  </>
+                )}
+                <th className="px-4 py-3 text-right">Efectivo</th>
+                <th className="px-4 py-3 text-right">Digital</th>
+                <th className="px-4 py-3 text-right">Gastos</th>
+                <th className="px-4 py-3 text-right">Guardado</th>
+                <th className="px-4 py-3 text-right font-bold">Ventas</th>
+                <th className="px-4 py-3 text-right font-bold">Caja Final</th>
+                <th className="px-4 py-3 text-center">Imprimir</th>
               </tr>
             </thead>
-
             <tbody>
-              {movimientos.map((m, i) => (
-                <tr key={i} style={{ borderBottom: "1px solid #ddd" }}>
-                  <td>{m.fecha}</td>
-                  <td>{m.tipo}</td>
-                  <td>{m.descripcion}</td>
-                  <td>{m.forma_pago}</td>
-                  <td style={{
-                    color: m.tipo === "gasto" ? "red" : "green"
-                  }}>
-                    {formato(m.monto)}
+              {datos.map((r, i) => (
+                <tr key={i} className="border-t hover:bg-slate-50">
+                  {tipo !== "turno" && (
+                    <>
+                      <td className="px-4 py-3">{r.fecha_desde || ""}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs">{r.creado_en || ""}</td>
+                    </>
+                  )}
+                  {tipo === "turno" && (
+                    <>
+                      <td className="px-4 py-3">{r.fecha || ""}</td>
+                      <td className="px-4 py-3 capitalize">{r.turno || ""}</td>
+                    </>
+                  )}
+                  <td className="px-4 py-3 text-right">{fmt(r.ingresos_efectivo)}</td>
+                  <td className="px-4 py-3 text-right">{fmt(r.ingresos_digital || r.transferencias)}</td>
+                  <td className="px-4 py-3 text-right text-red-600">{fmt(r.gastos)}</td>
+                  <td className="px-4 py-3 text-right text-blue-600">{fmt(r.guardado)}</td>
+                  <td className="px-4 py-3 text-right font-bold">{fmt(r.total_ventas)}</td>
+                  <td className="px-4 py-3 text-right font-bold">{fmt(r.caja_final || r.efectivo_final)}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => imprimir(r)}
+                      disabled={imprimiendo === (r.id || r._caja_id)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50 text-xs"
+                    >
+                      {imprimiendo === (r.id || r._caja_id) ? "⏳" : "🖨️ PDF"}
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
-
           </table>
+        </div>
+      )}
+
+      {/* Detalle de movimientos del turno */}
+      {tipo === "turno" && movimientos.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-3">Detalle de movimientos</h3>
+          <div className="overflow-x-auto bg-white rounded-xl shadow">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-700 text-white">
+                <tr>
+                  <th className="px-4 py-3 text-left">Fecha</th>
+                  <th className="px-4 py-3 text-left">Tipo</th>
+                  <th className="px-4 py-3 text-left">Descripción</th>
+                  <th className="px-4 py-3 text-left">Forma pago</th>
+                  <th className="px-4 py-3 text-right">Monto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {movimientos.map((m, i) => (
+                  <tr key={i} className="border-t">
+                    <td className="px-4 py-2 text-xs text-gray-500">{m.fecha}</td>
+                    <td className="px-4 py-2 capitalize">{m.tipo}</td>
+                    <td className="px-4 py-2">{m.descripcion}</td>
+                    <td className="px-4 py-2">{m.forma_pago}</td>
+                    <td className={`px-4 py-2 text-right font-semibold ${m.tipo === "gasto" ? "text-red-600" : "text-green-700"}`}>
+                      {fmt(m.monto)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
     </div>
   );
 }
-
-const th = {
-  padding: 12,
-  textAlign: "left"
-};
-
-const fila = {
-  borderBottom: "1px solid #ddd"
-};
