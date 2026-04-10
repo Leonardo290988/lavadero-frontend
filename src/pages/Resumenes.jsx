@@ -143,7 +143,7 @@ export default function Resumenes() {
             <option value="">Seleccione turno</option>
             {turnos.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.fecha} — Turno {t.turno}
+                {fmtFecha(t.fecha)} — Turno {t.turno}
               </option>
             ))}
           </select>
