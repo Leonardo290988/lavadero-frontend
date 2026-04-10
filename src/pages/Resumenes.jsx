@@ -99,15 +99,16 @@ export default function Resumenes() {
   const fmt = (n) =>
     Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
 
-  // Convierte cualquier fecha (YYYY-MM-DD o ISO timestamp) → "DD/MM/YY"
+  // Convierte cualquier fecha a "DD/MM/YY" sin bugs de timezone
   const fmtFecha = (f) => {
     if (!f) return "";
-    const d = new Date(f);
-    if (isNaN(d)) return f;
-    const dia = String(d.getUTCDate()).padStart(2, "0");
-    const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
-    const anio = String(d.getUTCFullYear()).slice(2);
-    return `${dia}/${mes}/${anio}`;
+    // Si ya viene formateada con to_char (ej: "08/04/26" o "08/04/26 20:57"), tomar solo la parte de fecha
+    if (f.includes("/")) return f.slice(0, 8);
+    // Si viene como ISO o YYYY-MM-DD, tomar solo los primeros 10 chars y parsear sin Date()
+    const solo = f.slice(0, 10); // "2026-04-08"
+    const [y, m, d] = solo.split("-");
+    if (!y || !m || !d) return f;
+    return `${d}/${m}/${y.slice(2)}`;
   };
 
   // =========================
