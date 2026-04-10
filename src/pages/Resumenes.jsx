@@ -99,13 +99,15 @@ export default function Resumenes() {
   const fmt = (n) =>
     Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
 
-  // Convierte "YYYY-MM-DD" → "DD/MM/YYYY"
+  // Convierte cualquier fecha (YYYY-MM-DD o ISO timestamp) → "DD/MM/YY"
   const fmtFecha = (f) => {
     if (!f) return "";
-    // Si ya viene en otro formato (ej: turno con to_char), lo devuelve tal cual
-    if (f.includes("/")) return f;
-    const [y, m, d] = f.split("-");
-    return `${d}/${m}/${y}`;
+    const d = new Date(f);
+    if (isNaN(d)) return f;
+    const dia = String(d.getUTCDate()).padStart(2, "0");
+    const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const anio = String(d.getUTCFullYear()).slice(2);
+    return `${dia}/${mes}/${anio}`;
   };
 
   // =========================
