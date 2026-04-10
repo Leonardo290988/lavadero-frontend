@@ -99,6 +99,15 @@ export default function Resumenes() {
   const fmt = (n) =>
     Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
 
+  // Convierte "YYYY-MM-DD" → "DD/MM/YYYY"
+  const fmtFecha = (f) => {
+    if (!f) return "";
+    // Si ya viene en otro formato (ej: turno con to_char), lo devuelve tal cual
+    if (f.includes("/")) return f;
+    const [y, m, d] = f.split("-");
+    return `${d}/${m}/${y}`;
+  };
+
   // =========================
   // UI
   // =========================
@@ -177,13 +186,13 @@ export default function Resumenes() {
                 <tr key={i} className="border-t hover:bg-slate-50">
                   {tipo !== "turno" && (
                     <>
-                      <td className="px-4 py-3">{r.fecha_desde || ""}</td>
+                      <td className="px-4 py-3">{fmtFecha(r.fecha_desde)}</td>
                       <td className="px-4 py-3 text-gray-500 text-xs">{r.creado_en || ""}</td>
                     </>
                   )}
                   {tipo === "turno" && (
                     <>
-                      <td className="px-4 py-3">{r.fecha || ""}</td>
+                      <td className="px-4 py-3">{fmtFecha(r.fecha) || fmtFecha(r.fecha_desde)}</td>
                       <td className="px-4 py-3 capitalize">{r.turno || ""}</td>
                     </>
                   )}
