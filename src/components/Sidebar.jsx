@@ -4,6 +4,10 @@ import { Home, DollarSign, Package, BarChart2, Settings, CheckCircle, Truck } fr
 export default function Sidebar() {
   const location = useLocation();
 
+  // Leer el usuario logueado del localStorage
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+  const esAdmin = usuario?.rol === "admin";
+
   const itemClass = (path) =>
     `flex items-center gap-3 p-2 rounded-lg transition ${
       location.pathname === path
@@ -34,33 +38,32 @@ export default function Sidebar() {
           <DollarSign size={18} /> Caja
         </Link>
 
-        {/* ÓRDENES ABIERTAS */}
         <Link to="/ordenes" className={itemClass("/ordenes")}>
           <Package size={18} /> Órdenes
         </Link>
 
-        {/* ÓRDENES LISTAS PARA RETIRAR */}
         <Link to="/ordenes-listas" className={itemClass("/ordenes-listas")}>
           <CheckCircle size={18} /> Listas para retirar
         </Link>
 
-        {/* SOLICITUDES DE RETIRO */}
         <Link to="/solicitudes-retiro" className={itemClass("/solicitudes-retiro")}>
           <Truck size={18} /> Retiros a Domicilio
         </Link>
 
-        {/* ✅ ENVIOS */}
         <Link to="/envios" className={itemClass("/envios")}>
           <Truck size={18} /> Envíos a Domicilio
         </Link>
 
         <Link to="/envios-entregados" className={itemClass("/envios-entregados")}>
-        <Truck size={18} /> Envíos entregados
+          <Truck size={18} /> Envíos entregados
         </Link>
 
-        <Link to="/resumenes" className={itemClass("/resumenes")}>
-          <BarChart2 size={18} /> Resúmenes
-        </Link>
+        {/* Solo visible para admins */}
+        {esAdmin && (
+          <Link to="/resumenes" className={itemClass("/resumenes")}>
+            <BarChart2 size={18} /> Resúmenes
+          </Link>
+        )}
 
         <Link to="/configuracion" className={itemClass("/configuracion")}>
           <Settings size={18} /> Configuración
