@@ -42,7 +42,13 @@ export default function Resumenes() {
       return;
     }
 
-    const res = await fetch(`${API}/caja/resumenes/${tipo}s`);
+    const endpoints = {
+      diario: "diarios",
+      semanal: "semanales",
+      mensual: "mensuales"
+    };
+
+    const res = await fetch(`${API}/caja/resumenes/${endpoints[tipo]}`);
     const data = await res.json();
     setDatos(data);
   };
