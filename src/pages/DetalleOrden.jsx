@@ -86,7 +86,6 @@ export default function DetalleOrden() {
     if (res.ok) {
       const url = `${API}/pdf/ordenes/orden_${id}.pdf`;
       window.open(url, "_blank");
-      setTimeout(() => window.open(url, "_blank"), 500);
       alert("Orden confirmada y ticket generado");
       await cargarDetalle();
     } else {

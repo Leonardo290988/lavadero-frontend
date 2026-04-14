@@ -104,9 +104,19 @@ export default function OrdenesListas() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-2xl font-bold mb-2">
         Órdenes listas para retirar
       </h2>
+
+      {ordenes.length > 0 && (
+        <div className="mb-6 inline-block bg-blue-50 border border-blue-200 rounded-lg px-5 py-3">
+          <span className="text-sm text-blue-600 font-medium">Total a cobrar: </span>
+          <span className="text-xl font-bold text-blue-700">
+            ${ordenes.reduce((acc, o) => acc + Number(o.total_a_pagar || 0), 0).toLocaleString("es-AR")}
+          </span>
+          <span className="text-sm text-blue-500 ml-2">({ordenes.length} órdenes)</span>
+        </div>
+      )}
 
       {ordenes.length === 0 ? (
         <p>No hay órdenes listas</p>
