@@ -65,6 +65,12 @@ export default function Sidebar() {
           </Link>
         )}
 
+        {esAdmin && (
+          <Link to="/puntos" className={itemClass("/puntos")}>
+            <span style={{fontSize:18}}>🏆</span> Puntos clientes
+          </Link>
+        )}
+
         <Link to="/configuracion" className={itemClass("/configuracion")}>
           <Settings size={18} /> Configuración
         </Link>

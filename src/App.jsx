@@ -10,6 +10,7 @@ import OrdenesListas from "./pages/OrdenesListas";
 import Caja from "./pages/Caja";
 import Retiros from "./pages/Retiros";
 import Resumenes from "./pages/Resumenes";
+import Puntos from "./pages/Puntos";
 import SolicitudesRetiros from "./pages/SolicitudesRetiros";
 import Envios from "./pages/Envios";
 import SimuladorCliente from "./pages/SimuladorCliente";
@@ -35,6 +36,7 @@ function App() {
 
         <Route path="retiros" element={<Retiros />} />
         <Route path="resumenes" element={<Resumenes />} />
+        <Route path="puntos" element={<Puntos />} />
         <Route path="solicitudes-retiro" element={<SolicitudesRetiros />} />
         <Route path="/repartidor" element={<EnviosPendientesRepartidor />} />
 
