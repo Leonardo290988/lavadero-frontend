@@ -194,6 +194,11 @@ export default function DetalleOrden() {
         <p className="mt-2">
           <b>Total estimado:</b> ${Math.max(calcularTotalEstimado() - senia, 0)}
         </p>
+        {orden.descuento_fidelidad > 0 && (
+          <p className="mt-1 text-green-700 font-semibold text-sm">
+            🏆 Descuento fidelidad {orden.descuento_fidelidad}% aplicado al cerrar la orden
+          </p>
+        )}
         <p className="text-sm text-gray-500">
           * El total final se confirma al cerrar la orden
         </p>

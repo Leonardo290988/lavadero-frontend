@@ -3,7 +3,7 @@ const API_URL = 'https://lavadero-backend-production-e1eb.up.railway.app';
 // ==========================
 // CREAR ORDEN
 // ==========================
-export const crearOrden = async (cliente_id, senia = 0, usuario_id) => {
+export const crearOrden = async (cliente_id, senia = 0, usuario_id, descuento_fidelidad = 0) => {
 
   const res = await fetch(`${API_URL}/ordenes`, {
     method: 'POST',
@@ -15,7 +15,8 @@ export const crearOrden = async (cliente_id, senia = 0, usuario_id) => {
       estado: 'ingresado',
       fecha_retiro: null,
       senia: Number(senia),
-      usuario_id   // ✅ NUEVO
+      usuario_id,
+      descuento_fidelidad: Number(descuento_fidelidad)
     })
   });
 
