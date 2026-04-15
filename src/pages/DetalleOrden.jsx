@@ -59,6 +59,10 @@ export default function DetalleOrden() {
     await cargarDetalle();
     setCantidad(1);
     setServicioId("");
+    // Si la orden ya estaba confirmada, regenerar el ticket automáticamente
+    if (orden?.estado === "confirmada") {
+      await fetch(`${API}/ordenes/${id}/reimprimir-orden`, { method: "POST" });
+    }
   };
 
   const guardarSenia = async (valor) => {
@@ -76,6 +80,10 @@ export default function DetalleOrden() {
       method: "DELETE",
     });
     await cargarDetalle();
+    // Si la orden ya estaba confirmada, regenerar el ticket automáticamente
+    if (orden?.estado === "confirmada") {
+      await fetch(`${API}/ordenes/${id}/reimprimir-orden`, { method: "POST" });
+    }
   };
 
   const confirmarOrden = async () => {

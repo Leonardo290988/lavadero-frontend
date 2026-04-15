@@ -102,13 +102,16 @@ export default function OrdenesListas() {
     return <p className="p-6">Cargando órdenes listas...</p>;
   }
 
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+  const esAdmin = usuario?.rol === "admin";
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-2">
         Órdenes listas para retirar
       </h2>
 
-      {ordenes.length > 0 && (
+      {esAdmin && ordenes.length > 0 && (
         <div className="mb-6 inline-block bg-blue-50 border border-blue-200 rounded-lg px-5 py-3">
           <span className="text-sm text-blue-600 font-medium">Total a cobrar: </span>
           <span className="text-xl font-bold text-blue-700">
