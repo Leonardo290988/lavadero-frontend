@@ -6,7 +6,8 @@ import { formatearFechaHoraISO } from "../utils/fechas";
 
 export default function OrdenesListas() {
 
-  const usuario = JSON.parse(localStorage.getItem("usuario"));   // ✅ AGREGADO
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");   // ✅ AGREGADO
+  const esAdmin = usuario?.rol === "admin";
 
   const [ordenes, setOrdenes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -101,9 +102,6 @@ export default function OrdenesListas() {
   if (loading) {
     return <p className="p-6">Cargando órdenes listas...</p>;
   }
-
-  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-  const esAdmin = usuario?.rol === "admin";
 
   return (
     <div className="p-6">
