@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { formatearFechaHoraISO } from "../utils/fechas";
 
 const API = "https://lavadero-backend-production-e1eb.up.railway.app";
 
 export default function DetalleOrden() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [orden, setOrden] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -188,6 +189,7 @@ export default function DetalleOrden() {
 
   const esConfirmada = orden.estado === "confirmada";
   const esRetirada = orden.estado === "retirada";
+  const esCerrada = ["lista", "retirada", "entregada"].includes(orden.estado);
 
   return (
     <div className="p-6 max-w-3xl">
@@ -266,10 +268,20 @@ export default function DetalleOrden() {
               {eliminando ? "Eliminando..." : "🗑️ Eliminar orden"}
             </button>
           )}
+
+          {esConfirmada && (
+            <button
+              onClick={() => navigate("/ordenes")}
+              className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700"
+            >
+              ✅ Aceptar
+            </button>
+          )}
         </div>
       </div>
 
-      {/* AGREGAR SERVICIO */}
+      {/* AGREGAR SERVICIO — solo si la orden no está cerrada */}
+      {!esCerrada && (
       <div className="bg-white rounded shadow p-4 mb-6">
         <h3 className="font-semibold mb-3">Agregar servicio</h3>
         <div className="flex gap-3">
@@ -300,6 +312,7 @@ export default function DetalleOrden() {
           </button>
         </div>
       </div>
+      )}
 
       {/* LISTADO SERVICIOS */}
       <h3 className="font-semibold mb-2">Servicios</h3>
@@ -324,12 +337,14 @@ export default function DetalleOrden() {
                 <td className="px-4 py-2 text-center">${s.precio_unitario}</td>
                 <td className="px-4 py-2 text-center">${s.subtotal}</td>
                 <td className="px-4 py-2 text-center">
-                  <button
-                    onClick={() => eliminarServicio(s.orden_servicio_id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Eliminar
-                  </button>
+                  {!esCerrada && (
+                    <button
+                      onClick={() => eliminarServicio(s.orden_servicio_id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
