@@ -11,6 +11,7 @@ import Caja from "./pages/Caja";
 import Retiros from "./pages/Retiros";
 import Resumenes from "./pages/Resumenes";
 import Puntos from "./pages/Puntos";
+import ClientesInactivos from "./pages/ClientesInactivos";
 import SolicitudesRetiros from "./pages/SolicitudesRetiros";
 import Envios from "./pages/Envios";
 import SimuladorCliente from "./pages/SimuladorCliente";
@@ -37,6 +38,7 @@ function App() {
         <Route path="retiros" element={<Retiros />} />
         <Route path="resumenes" element={<Resumenes />} />
         <Route path="puntos" element={<Puntos />} />
+        <Route path="clientes-inactivos" element={<ClientesInactivos />} />
         <Route path="solicitudes-retiro" element={<SolicitudesRetiros />} />
         <Route path="/repartidor" element={<EnviosPendientesRepartidor />} />
 

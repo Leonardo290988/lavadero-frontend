@@ -71,6 +71,10 @@ export default function Sidebar() {
           </Link>
         )}
 
+        <Link to="/clientes-inactivos" className={itemClass("/clientes-inactivos")}>
+          <span style={{fontSize:18}}>📵</span> Clientes inactivos
+        </Link>
+
         <Link to="/configuracion" className={itemClass("/configuracion")}>
           <Settings size={18} /> Configuración
         </Link>
