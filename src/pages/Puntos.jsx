@@ -4,14 +4,18 @@ const API = "https://lavadero-backend-production-e1eb.up.railway.app";
 
 export default function Puntos() {
   const [clientes, setClientes] = useState([]);
+  const [estadisticas, setEstadisticas] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
 
   const cargar = async () => {
     try {
-      const res = await fetch(`${API}/puntos/todos`);
-      const data = await res.json();
-      setClientes(data);
+      const [resClientes, resStats] = await Promise.all([
+        fetch(`${API}/puntos/todos`).then(r => r.json()),
+        fetch(`${API}/puntos/estadisticas`).then(r => r.json()),
+      ]);
+      setClientes(resClientes);
+      setEstadisticas(resStats);
     } catch {
       console.error("Error cargando puntos");
     } finally {
@@ -45,6 +49,28 @@ export default function Puntos() {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-2">🏆 Puntos de clientes</h2>
       <p className="text-gray-500 text-sm mb-6">1 punto cada $1.000 gastado</p>
+
+      {/* Estadísticas de canjes */}
+      {estadisticas && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-purple-700">{estadisticas.clientes_que_canjearon}</p>
+            <p className="text-sm text-purple-600">Clientes canjearon</p>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-blue-700">{estadisticas.total_puntos_canjeados}</p>
+            <p className="text-sm text-blue-600">Puntos canjeados total</p>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-amber-700">{estadisticas.total_puntos_activos}</p>
+            <p className="text-sm text-amber-600">Puntos activos</p>
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-green-700">{estadisticas.clientes_con_descuento}</p>
+            <p className="text-sm text-green-600">Con descuento disponible</p>
+          </div>
+        </div>
+      )}
 
       {/* Buscador */}
       <input
