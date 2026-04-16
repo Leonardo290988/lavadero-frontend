@@ -135,15 +135,33 @@ export default function OrdenesListas() {
             </thead>
 
             <tbody>
-              {ordenes.map((o) => (
-                <tr key={o.id} className="border-t">
-                  <td className="px-4 py-3">#{o.id}</td>
+              {ordenes.map((o) => {
+                const diasLista = o.fecha_lista
+                  ? Math.floor((new Date() - new Date(o.fecha_lista)) / (1000 * 60 * 60 * 24))
+                  : 0;
+                const tieneMulta = diasLista > 30;
+                const multa = tieneMulta ? Math.floor(Number(o.total) * 0.10) : 0;
+                return (
+                <tr key={o.id} className={`border-t ${tieneMulta ? "bg-red-50" : ""}`}>
+                  <td className="px-4 py-3">
+                    #{o.id}
+                    {tieneMulta && (
+                      <span className="ml-2 text-xs bg-red-600 text-white px-2 py-0.5 rounded-full">
+                        +{diasLista}d ⚠️
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">{o.cliente}</td>
                   <td className="px-4 py-3">
                     {formatearFechaHoraISO(o.fecha_ingreso)}
                   </td>
                   <td className="px-4 py-3 font-semibold">
                     ${o.total_a_pagar}
+                    {tieneMulta && (
+                      <span className="block text-xs text-red-600 font-normal">
+                        + multa ${multa.toLocaleString("es-AR")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 flex gap-2 justify-center">
                     <button
@@ -169,7 +187,8 @@ export default function OrdenesListas() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
