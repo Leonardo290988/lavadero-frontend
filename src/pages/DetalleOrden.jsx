@@ -99,7 +99,10 @@ export default function DetalleOrden() {
     if (res.ok) {
       const url = `${API}/pdf/ordenes/orden_${id}.pdf`;
       window.open(url, "_blank");
-      alert("Orden confirmada y ticket generado");
+      setTimeout(() => {
+        window.open(`${API}/pdf/ordenes/ropa_${id}.pdf`, "_blank");
+      }, 500);
+      alert("Orden confirmada y tickets generados");
       await cargarDetalle();
     } else {
       const data = await res.json();
