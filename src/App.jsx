@@ -13,6 +13,7 @@ import Resumenes from "./pages/Resumenes";
 import Puntos from "./pages/Puntos";
 import ClientesInactivos from "./pages/ClientesInactivos";
 import Estadisticas from "./pages/Estadisticas";
+import OrdenesSinRetirar from "./pages/OrdenesSinRetirar";
 import SolicitudesRetiros from "./pages/SolicitudesRetiros";
 import Envios from "./pages/Envios";
 import SimuladorCliente from "./pages/SimuladorCliente";
@@ -41,6 +42,7 @@ function App() {
         <Route path="puntos" element={<Puntos />} />
         <Route path="clientes-inactivos" element={<ClientesInactivos />} />
         <Route path="estadisticas" element={<Estadisticas />} />
+        <Route path="ordenes-sin-retirar" element={<OrdenesSinRetirar />} />
         <Route path="solicitudes-retiro" element={<SolicitudesRetiros />} />
         <Route path="/repartidor" element={<EnviosPendientesRepartidor />} />
 

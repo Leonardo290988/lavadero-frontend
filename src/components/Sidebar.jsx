@@ -81,6 +81,10 @@ export default function Sidebar() {
           <span style={{fontSize:18}}>📵</span> Clientes inactivos
         </Link>
 
+        <Link to="/ordenes-sin-retirar" className={itemClass("/ordenes-sin-retirar")}>
+          <span style={{fontSize:18}}>⏳</span> Sin retirar
+        </Link>
+
         <Link to="/configuracion" className={itemClass("/configuracion")}>
           <Settings size={18} /> Configuración
         </Link>
