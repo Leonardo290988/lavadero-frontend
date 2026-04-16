@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatearFechaHoraISO } from "../utils/fechas";
 
@@ -126,6 +126,7 @@ export default function Ordenes() {
             </thead>
             <tbody>
               {ordenesFiltradas.map((o) => (
+                <React.Fragment key={o.id}>
                 <tr key={o.id} className="border-t hover:bg-slate-50">
                   <td className="px-4 py-3">#{o.id}</td>
                   <td className="px-4 py-3 font-medium">{o.cliente}</td>
@@ -184,6 +185,7 @@ export default function Ordenes() {
                     </td>
                   </tr>
                 )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
