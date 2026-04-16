@@ -72,7 +72,7 @@ export default function Estadisticas() {
           {dias.map((d, i) => (
             <div key={i} className="flex items-center gap-3">
               <span className="w-24 text-sm font-medium capitalize">
-                {d.dia_nombre?.trim()}
+                {d.dia_nombre}
               </span>
               <div className="flex-1 bg-slate-100 rounded-full h-6 overflow-hidden">
                 <div
