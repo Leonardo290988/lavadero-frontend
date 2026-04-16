@@ -15,6 +15,10 @@ export default function DetalleOrden() {
 
   const [senia, setSenia] = useState(0);
   const [reimprimiendo, setReimprimiendo] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
+
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+  const esAdmin = usuario?.rol === "admin";
 
   const cargarDetalle = async () => {
     const res = await fetch(`${API}/ordenes/${id}/detalle`);
@@ -140,6 +144,25 @@ export default function DetalleOrden() {
     }
   };
 
+  const handleEliminarOrden = async () => {
+    if (!window.confirm(`¿Seguro que querés eliminar la orden #${orden.orden_id}? Esta acción no se puede deshacer.`)) return;
+    setEliminando(true);
+    try {
+      const res = await fetch(`${API}/ordenes/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.mensaje);
+        window.history.back();
+      } else {
+        alert(data.error || "Error al eliminar la orden");
+      }
+    } catch {
+      alert("Error de conexión");
+    } finally {
+      setEliminando(false);
+    }
+  };
+
   const calcularTotalEstimado = () => {
     if (!orden?.servicios) return 0;
     let total = 0;
@@ -231,6 +254,16 @@ export default function DetalleOrden() {
               className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 disabled:opacity-50 flex items-center gap-2"
             >
               🖨️ {reimprimiendo ? "Generando..." : "Reimprimir ticket retiro"}
+            </button>
+          )}
+
+          {esAdmin && ['ingresado', 'confirmada'].includes(orden.estado) && (
+            <button
+              onClick={handleEliminarOrden}
+              disabled={eliminando}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
+            >
+              {eliminando ? "Eliminando..." : "🗑️ Eliminar orden"}
             </button>
           )}
         </div>
