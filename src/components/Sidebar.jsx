@@ -66,6 +66,12 @@ export default function Sidebar() {
         )}
 
         {esAdmin && (
+          <Link to="/estadisticas" className={itemClass("/estadisticas")}>
+            <BarChart2 size={18} /> Estadísticas
+          </Link>
+        )}
+
+        {esAdmin && (
           <Link to="/puntos" className={itemClass("/puntos")}>
             <span style={{fontSize:18}}>🏆</span> Puntos clientes
           </Link>
