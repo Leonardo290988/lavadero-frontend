@@ -72,6 +72,12 @@ export default function Sidebar() {
         )}
 
         {esAdmin && (
+          <Link to="/servicios" className={itemClass("/servicios")}>
+            <Settings size={18} /> Servicios y precios
+          </Link>
+        )}
+
+        {esAdmin && (
           <Link to="/puntos" className={itemClass("/puntos")}>
             <span style={{fontSize:18}}>🏆</span> Puntos clientes
           </Link>
