@@ -117,8 +117,11 @@ export default function DetalleOrden() {
         method: "POST",
       });
       if (res.ok) {
-        const url = `${API}/pdf/ordenes/orden_${id}.pdf?t=${Date.now()}`;
-        window.open(url, "_blank");
+        const t = Date.now();
+        window.open(`${API}/pdf/ordenes/orden_${id}.pdf?t=${t}`, "_blank");
+        setTimeout(() => {
+          window.open(`${API}/pdf/ordenes/ropa_${id}.pdf?t=${t}`, "_blank");
+        }, 500);
       } else {
         alert("Error al reimprimir el ticket");
       }
