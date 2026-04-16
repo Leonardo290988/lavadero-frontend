@@ -12,6 +12,8 @@ export default function Ordenes() {
   const [verTodas, setVerTodas] = useState(false);
   const navigate = useNavigate();
 
+  const [notaVisible, setNotaVisible] = useState(null); // id de la orden cuya nota se muestra
+
   const cargarOrdenes = async () => {
     try {
       const [abiertas, todas] = await Promise.all([
@@ -161,8 +163,27 @@ export default function Ordenes() {
                         Cerrar
                       </button>
                     )}
+                    {o.notas && (
+                      <button
+                        onClick={() => setNotaVisible(notaVisible === o.id ? null : o.id)}
+                        className="bg-amber-400 text-white px-2 py-1 rounded hover:bg-amber-500 text-base"
+                        title="Ver nota"
+                      >
+                        📋
+                      </button>
+                    )}
                   </td>
                 </tr>
+                {notaVisible === o.id && (
+                  <tr key={`nota-${o.id}`} className="bg-amber-50">
+                    <td colSpan={verTodas ? 6 : 6} className="px-4 py-2">
+                      <div className="flex items-start gap-2">
+                        <span className="text-amber-600 font-semibold text-sm">📋 Nota:</span>
+                        <span className="text-sm text-gray-700">{o.notas}</span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               ))}
             </tbody>
           </table>

@@ -15,6 +15,7 @@ export default function DetalleOrden() {
   const [cantidad, setCantidad] = useState(1);
 
   const [senia, setSenia] = useState(0);
+  const [notas, setNotas] = useState("");
   const [reimprimiendo, setReimprimiendo] = useState(false);
   const [eliminando, setEliminando] = useState(false);
 
@@ -26,6 +27,7 @@ export default function DetalleOrden() {
     const data = await res.json();
     setOrden(data);
     setSenia(Number(data.senia) || 0);
+    setNotas(data.notas || "");
   };
 
   useEffect(() => {
@@ -77,6 +79,14 @@ export default function DetalleOrden() {
       body: JSON.stringify({ senia: valor }),
     });
     await cargarDetalle();
+  };
+
+  const guardarNotas = async (valor) => {
+    await fetch(`${API}/ordenes/${id}/notas`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notas: valor }),
+    });
   };
 
   const eliminarServicio = async (ordenServicioId) => {
@@ -219,6 +229,18 @@ export default function DetalleOrden() {
             value={senia}
             onChange={(e) => setSenia(Number(e.target.value))}
             onBlur={() => guardarSenia(senia)}
+          />
+        </div>
+
+        <div className="mt-3">
+          <b>Notas / Observaciones:</b>
+          <textarea
+            className="border rounded px-3 py-2 w-full mt-1 text-sm"
+            rows={3}
+            placeholder="Ej: acolchado con mancha en la esquina, no planchar, etc."
+            value={notas}
+            onChange={(e) => setNotas(e.target.value)}
+            onBlur={() => guardarNotas(notas)}
           />
         </div>
 
