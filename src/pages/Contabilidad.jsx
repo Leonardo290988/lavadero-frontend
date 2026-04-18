@@ -275,7 +275,7 @@ export default function Contabilidad() {
               {/* Tarjetas resumen */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
-                  <p className="text-sm text-blue-600">Ingresos caja</p>
+                  <p className="text-sm text-blue-600">Ingresos caja (neto)</p>
                   <p className="text-xl font-bold text-blue-700">{fmtPesos(balance.resumen.total_caja)}</p>
                 </div>
                 <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
@@ -306,6 +306,12 @@ export default function Contabilidad() {
                     <span className="text-gray-600">Caja (digital)</span>
                     <span className="font-semibold">{fmtPesos(balance.caja?.digital || 0)}</span>
                   </div>
+                  {Number(balance.caja?.gastos || 0) > 0 && (
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-gray-400 text-sm">Gastos de caja (descuentos)</span>
+                      <span className="font-semibold text-red-500">-{fmtPesos(balance.caja?.gastos || 0)}</span>
+                    </div>
+                  )}
                   {balance.ingresos_externos.map((ing, i) => (
                     <div key={i} className="flex justify-between py-2 border-b">
                       <span className="text-gray-600">{labelCategoria(ing.categoria)}</span>
