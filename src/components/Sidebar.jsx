@@ -84,6 +84,12 @@ export default function Sidebar() {
         )}
 
         {esAdmin && (
+          <Link to="/club" className={itemClass("/club")}>
+            <span style={{fontSize:18}}>⚽</span> Club Los Indios
+          </Link>
+        )}
+
+        {esAdmin && (
           <Link to="/contabilidad" className={itemClass("/contabilidad")}>
             <span style={{fontSize:18}}>📒</span> Contabilidad
           </Link>
