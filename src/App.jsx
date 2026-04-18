@@ -15,6 +15,8 @@ import ClientesInactivos from "./pages/ClientesInactivos";
 import Estadisticas from "./pages/Estadisticas";
 import OrdenesSinRetirar from "./pages/OrdenesSinRetirar";
 import Servicios from "./pages/Servicios";
+import Contabilidad from "./pages/Contabilidad";
+import Contabilidad from "./pages/Contabilidad";
 import SolicitudesRetiros from "./pages/SolicitudesRetiros";
 import Envios from "./pages/Envios";
 import SimuladorCliente from "./pages/SimuladorCliente";
@@ -45,6 +47,8 @@ function App() {
         <Route path="estadisticas" element={<Estadisticas />} />
         <Route path="ordenes-sin-retirar" element={<OrdenesSinRetirar />} />
         <Route path="servicios" element={<Servicios />} />
+        <Route path="contabilidad" element={<Contabilidad />} />
+        <Route path="contabilidad" element={<Contabilidad />} />
         <Route path="solicitudes-retiro" element={<SolicitudesRetiros />} />
         <Route path="/repartidor" element={<EnviosPendientesRepartidor />} />
 

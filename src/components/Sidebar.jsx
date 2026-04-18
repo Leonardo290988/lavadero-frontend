@@ -78,6 +78,18 @@ export default function Sidebar() {
         )}
 
         {esAdmin && (
+          <Link to="/contabilidad" className={itemClass("/contabilidad")}>
+            <span style={{fontSize:18}}>💼</span> Contabilidad
+          </Link>
+        )}
+
+        {esAdmin && (
+          <Link to="/contabilidad" className={itemClass("/contabilidad")}>
+            <span style={{fontSize:18}}>📒</span> Contabilidad
+          </Link>
+        )}
+
+        {esAdmin && (
           <Link to="/puntos" className={itemClass("/puntos")}>
             <span style={{fontSize:18}}>🏆</span> Puntos clientes
           </Link>
