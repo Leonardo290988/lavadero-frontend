@@ -16,6 +16,7 @@ export default function OrdenesListas() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [metodoPago, setMetodoPago] = useState("Efectivo");
+  const [procesando, setProcesando] = useState(false);
   const [reimprimiendo, setReimprimiendo] = useState(null); // guarda el id que se está reimprimiendo
 
   const cargarOrdenes = async () => {
@@ -37,6 +38,8 @@ export default function OrdenesListas() {
   };
 
   const confirmarRetiro = async () => {
+    if (procesando) return; // evitar doble click
+    setProcesando(true);
     try {
       const res = await fetch(
         `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${ordenSeleccionada}/retirar`,
@@ -45,7 +48,7 @@ export default function OrdenesListas() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             metodo_pago: metodoPago,
-            usuario_id: usuario?.id   // ✅ AGREGADO
+            usuario_id: usuario?.id
           }),
         }
       );
@@ -70,6 +73,8 @@ export default function OrdenesListas() {
 
     } catch (error) {
       console.error("Error retirando orden:", error);
+    } finally {
+      setProcesando(false);
     }
   };
 
@@ -222,9 +227,10 @@ export default function OrdenesListas() {
 
               <button
                 onClick={confirmarRetiro}
-                className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700"
+                disabled={procesando}
+                className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
               >
-                Aceptar
+                {procesando ? "Procesando..." : "Aceptar"}
               </button>
             </div>
           </div>
