@@ -21,8 +21,9 @@ const CATEGORIAS_INGRESO = [
 const fmtPesos = (n) => `$${Number(n).toLocaleString("es-AR")}`;
 const fmtFecha = (f) => {
   if (!f) return "";
-  const d = new Date(f + "T12:00:00");
-  return d.toLocaleDateString("es-AR");
+  const str = typeof f === "string" ? f.slice(0, 10) : new Date(f).toISOString().slice(0, 10);
+  const [anio, mes, dia] = str.split("-");
+  return `${dia}/${mes}/${anio}`;
 };
 
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];

@@ -6,7 +6,11 @@ const PRECIO_DEFAULT = 8000;
 const fmtPesos = (n) => `$${Number(n).toLocaleString("es-AR")}`;
 const fmtFecha = (f) => {
   if (!f) return "";
-  return new Date(f + "T12:00:00").toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" });
+  const str = typeof f === "string" ? f.slice(0, 10) : new Date(f).toISOString().slice(0, 10);
+  const [anio, mes, dia] = str.split("-");
+  const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  const d = new Date(str + "T12:00:00");
+  return `${diasSemana[d.getDay()]} ${dia}/${mes}/${anio}`;
 };
 
 export default function Club() {
