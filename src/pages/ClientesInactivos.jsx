@@ -40,7 +40,22 @@ Pasate cuando quieras por *Hipólito Yrigoyen 1471, Moreno*
 
 ¡Te esperamos! 🧺`;
 
-    window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`, "_blank");
+    try {
+      const res = await fetch(`${API}/whatsapp/enviar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ telefono: tel, mensaje })
+      });
+      const data = await res.json();
+
+      if (data.automatico) {
+        alert("✅ Mensaje enviado automáticamente");
+      } else {
+        window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`, "_blank");
+      }
+    } catch {
+      window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`, "_blank");
+    }
 
     // Marcar como contactado en el backend
     try {

@@ -47,10 +47,23 @@ Te recordamos que tu orden *#${o.id}* está lista para retirar 🧺
 
 ⚠️ Recordá que pasados los 30 días se cobra una multa por almacenamiento.`;
 
-    window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`, "_blank");
-
-    // Registrar recordatorio
     try {
+      // Intentar enviar via bot
+      const res = await fetch(`${API}/whatsapp/enviar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ telefono: tel, mensaje })
+      });
+      const data = await res.json();
+
+      if (data.automatico) {
+        alert("✅ Recordatorio enviado automáticamente");
+      } else {
+        // Fallback: abrir WhatsApp Web
+        window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`, "_blank");
+      }
+
+      // Registrar recordatorio
       await fetch(`${API}/ordenes/${o.id}/recordatorio`, { method: "POST" });
       setOrdenes(prev => prev.map(ord =>
         ord.id === o.id
@@ -58,7 +71,8 @@ Te recordamos que tu orden *#${o.id}* está lista para retirar 🧺
           : ord
       ));
     } catch {
-      console.error("Error registrando recordatorio");
+      // Si falla todo, abrir WhatsApp Web
+      window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`, "_blank");
     }
   };
 
