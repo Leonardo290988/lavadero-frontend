@@ -15,6 +15,8 @@ const fmtFecha = (f) => {
 
 export default function Club() {
   const hoy = new Date().toISOString().slice(0, 10);
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+  const esAdmin = usuario?.rol === "admin";
   const [valets, setValets] = useState([]);
   const [resumen, setResumen] = useState(null);
   const [tab, setTab] = useState("pendientes"); // pendientes | historial
@@ -128,7 +130,7 @@ export default function Club() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h2 className="text-2xl font-bold">⚽ Club Los Indios</h2>
+          <h2 className="text-2xl font-bold">🏀 Club Los Indios</h2>
           <p className="text-gray-500 text-sm">Registro de valets — {fmtPesos(PRECIO_DEFAULT)} por valet</p>
         </div>
         <button
@@ -150,10 +152,12 @@ export default function Club() {
             <p className="text-2xl font-bold text-blue-700">{resumen.total_valets || 0}</p>
             <p className="text-sm text-blue-600">Valets sin facturar</p>
           </div>
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-green-700">{fmtPesos(resumen.total_pesos || 0)}</p>
-            <p className="text-sm text-green-600">Total a facturar</p>
-          </div>
+          {esAdmin && (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-green-700">{fmtPesos(resumen.total_pesos || 0)}</p>
+              <p className="text-sm text-green-600">Total a facturar</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -185,7 +189,7 @@ export default function Club() {
                 placeholder="Ej: ropa de fútbol" />
             </div>
           </div>
-          {form.cantidad && (
+          {form.cantidad && esAdmin && (
             <p className="mt-3 text-sm text-green-700 font-semibold">
               Subtotal: {fmtPesos(Number(form.cantidad) * Number(form.precio_unitario))}
             </p>
@@ -276,8 +280,8 @@ export default function Club() {
                 )}
                 <th className="px-4 py-3 text-left">Fecha</th>
                 <th className="px-4 py-3 text-center">Valets</th>
-                <th className="px-4 py-3 text-center">Precio unit.</th>
-                <th className="px-4 py-3 text-right">Subtotal</th>
+                {esAdmin && <th className="px-4 py-3 text-center">Precio unit.</th>}
+                {esAdmin && <th className="px-4 py-3 text-right">Subtotal</th>}
                 <th className="px-4 py-3 text-left">Observación</th>
                 {tab === "historial" && <th className="px-4 py-3 text-left">Factura</th>}
                 <th className="px-4 py-3 text-center">Acción</th>
@@ -302,10 +306,12 @@ export default function Club() {
                       <span className="font-bold text-blue-700">{v.cantidad}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-center">{fmtPesos(v.precio_unitario)}</td>
-                  <td className="px-4 py-3 text-right font-semibold">
-                    {fmtPesos(Number(v.cantidad) * Number(v.precio_unitario))}
-                  </td>
+                  {esAdmin && <td className="px-4 py-3 text-center">{fmtPesos(v.precio_unitario)}</td>}
+                  {esAdmin && (
+                    <td className="px-4 py-3 text-right font-semibold">
+                      {fmtPesos(Number(v.cantidad) * Number(v.precio_unitario))}
+                    </td>
+                  )}
                   <td className="px-4 py-3 text-gray-500 text-xs">
                     {editando?.id === v.id ? (
                       <input type="text" className="border rounded px-2 py-1 w-full"
@@ -339,13 +345,15 @@ export default function Club() {
             {tab === "pendientes" && pendientes.length > 0 && (
               <tfoot className="bg-slate-100">
                 <tr>
-                  <td colSpan={3} className="px-4 py-3 font-bold text-right">TOTAL</td>
+                  <td colSpan={esAdmin ? 3 : 2} className="px-4 py-3 font-bold text-right">TOTAL</td>
                   <td className="px-4 py-3 text-center font-bold">
                     {pendientes.reduce((acc, v) => acc + Number(v.cantidad), 0)} valets
                   </td>
-                  <td className="px-4 py-3 text-right font-bold text-green-700">
-                    {fmtPesos(totalPendiente)}
-                  </td>
+                  {esAdmin && (
+                    <td className="px-4 py-3 text-right font-bold text-green-700">
+                      {fmtPesos(totalPendiente)}
+                    </td>
+                  )}
                   <td colSpan={2}></td>
                 </tr>
               </tfoot>
