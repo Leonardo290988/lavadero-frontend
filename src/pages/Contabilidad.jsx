@@ -11,6 +11,7 @@ const CATEGORIAS_EGRESO = [
   { value: "gas", label: "Gas" },
   { value: "agua", label: "Agua" },
   { value: "municipal", label: "Municipal" },
+  { value: "internet", label: "Internet" },
   { value: "otro_egreso", label: "Otro egreso" },
 ];
 
