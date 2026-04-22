@@ -6,6 +6,7 @@ const CATEGORIAS_EGRESO = [
   { value: "sueldo_lautaro", label: "Sueldo Lautaro" },
   { value: "sueldo_julieta", label: "Sueldo Julieta" },
   { value: "insumos", label: "Insumos" },
+  { value: "alquiler", label: "Alquiler" },
   { value: "luz", label: "Luz" },
   { value: "gas", label: "Gas" },
   { value: "agua", label: "Agua" },
