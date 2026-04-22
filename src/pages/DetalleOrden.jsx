@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { formatearFechaHoraISO } from "../utils/fechas";
 
@@ -13,6 +13,7 @@ export default function DetalleOrden() {
   const [servicios, setServicios] = useState([]);
   const [servicioId, setServicioId] = useState("");
   const [cantidad, setCantidad] = useState(1);
+  const [dropdownAbierto, setDropdownAbierto] = useState(false);
 
   const [senia, setSenia] = useState(0);
   const [notas, setNotas] = useState("");
@@ -313,18 +314,48 @@ export default function DetalleOrden() {
       <div className="bg-white rounded shadow p-4 mb-6">
         <h3 className="font-semibold mb-3">Agregar servicio</h3>
         <div className="flex gap-3">
-          <select
-            className="border rounded px-3 py-2 flex-1"
-            value={servicioId}
-            onChange={(e) => setServicioId(e.target.value)}
-          >
-            <option value="">Seleccionar servicio</option>
-            {servicios.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.nombre} (${s.precio})
-              </option>
-            ))}
-          </select>
+          {/* Dropdown personalizado */}
+          <div className="relative flex-1">
+            <div
+              className="border rounded px-3 py-2 cursor-pointer bg-white flex justify-between items-center"
+              onClick={() => setDropdownAbierto(!dropdownAbierto)}
+            >
+              <span className={servicioId ? "" : "text-gray-400"}>
+                {servicioId
+                  ? (() => {
+                      const s = servicios.find(s => String(s.id) === String(servicioId));
+                      return s ? s.nombre : "Seleccionar servicio";
+                    })()
+                  : "Seleccionar servicio"}
+              </span>
+              <span className="text-gray-400 text-xs">▼</span>
+            </div>
+            {dropdownAbierto && (
+              <div className="absolute z-50 w-full bg-white border rounded shadow-lg max-h-64 overflow-y-auto mt-1">
+                <div
+                  className="px-3 py-2 text-gray-400 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => { setServicioId(""); setDropdownAbierto(false); }}
+                >
+                  Seleccionar servicio
+                </div>
+                {servicios.map((s) => {
+                  const match = s.nombre.match(/^(.*?Acolchado\s*)(.+)$/i);
+                  return (
+                    <div
+                      key={s.id}
+                      className={`px-3 py-2 hover:bg-blue-50 cursor-pointer ${String(servicioId) === String(s.id) ? "bg-blue-100" : ""}`}
+                      onClick={() => { setServicioId(s.id); setDropdownAbierto(false); }}
+                    >
+                      {match
+                        ? <>{match[1]}<strong>{match[2]}</strong></>
+                        : s.nombre}
+                      <span className="text-gray-400 text-sm ml-1">(${Number(s.precio).toLocaleString("es-AR")})</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           <input
             type="number"
             min="1"
