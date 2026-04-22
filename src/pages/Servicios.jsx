@@ -3,6 +3,15 @@ import { useEffect, useState } from "react";
 const API = "https://lavadero-backend-production-e1eb.up.railway.app";
 
 const fmtPesos = (n) => `$${Number(n).toLocaleString("es-AR")}`;
+
+// Pone en negrita el tamaño en nombres de acolchados
+const formatNombre = (nombre) => {
+  const match = nombre.match(/^(.*?Acolchado\s*)(.+)$/i);
+  if (match) {
+    return <>{match[1]}<strong>{match[2]}</strong></>;
+  }
+  return nombre;
+};
 const fmtFecha = (f) => {
   if (!f) return "";
   const str = typeof f === "string" ? f.slice(0, 10) : new Date(f).toISOString().slice(0, 10);
@@ -281,7 +290,7 @@ export default function Servicios() {
             ) : (
               <div className="flex items-center justify-between">
                 <div>
-                  <span className={`font-medium ${s.nombre.toLowerCase().includes('acolchado') ? 'font-bold' : ''}`}>{s.nombre}</span>
+                  <span className="font-medium">{formatNombre(s.nombre)}</span>
                   <span className="text-gray-500 text-sm ml-3">${Number(s.precio).toLocaleString("es-AR")}</span>
                 </div>
                 <div className="flex gap-2">
@@ -313,7 +322,7 @@ export default function Servicios() {
           {inactivos.map(s => (
             <div key={s.id} className="border-t px-4 py-3 flex items-center justify-between">
               <div>
-                <span className={`font-medium line-through text-gray-400 ${s.nombre.toLowerCase().includes('acolchado') ? 'font-bold' : ''}`}>{s.nombre}</span>
+                <span className="font-medium line-through text-gray-400">{formatNombre(s.nombre)}</span>
                 <span className="text-gray-400 text-sm ml-3">${Number(s.precio).toLocaleString("es-AR")}</span>
               </div>
               <button
