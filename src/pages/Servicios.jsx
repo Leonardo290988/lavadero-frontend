@@ -281,7 +281,7 @@ export default function Servicios() {
             ) : (
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="font-medium">{s.nombre}</span>
+                  <span className={`font-medium ${s.nombre.toLowerCase().includes('acolchado') ? 'font-bold' : ''}`}>{s.nombre}</span>
                   <span className="text-gray-500 text-sm ml-3">${Number(s.precio).toLocaleString("es-AR")}</span>
                 </div>
                 <div className="flex gap-2">
@@ -313,7 +313,7 @@ export default function Servicios() {
           {inactivos.map(s => (
             <div key={s.id} className="border-t px-4 py-3 flex items-center justify-between">
               <div>
-                <span className="font-medium line-through text-gray-400">{s.nombre}</span>
+                <span className={`font-medium line-through text-gray-400 ${s.nombre.toLowerCase().includes('acolchado') ? 'font-bold' : ''}`}>{s.nombre}</span>
                 <span className="text-gray-400 text-sm ml-3">${Number(s.precio).toLocaleString("es-AR")}</span>
               </div>
               <button
