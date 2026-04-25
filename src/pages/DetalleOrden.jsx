@@ -181,23 +181,44 @@ export default function DetalleOrden() {
     }
   };
 
+  // Promo 3x2 solo de Martes a Viernes (mismo criterio que el backend)
+  const promoActivaHoy = () => {
+    const dia = new Date().toLocaleDateString("es-AR", { weekday: "long" }).toLowerCase();
+    return ["martes", "miércoles", "jueves", "viernes"].includes(dia);
+  };
+
   const calcularTotalEstimado = () => {
     if (!orden?.servicios) return 0;
     let total = 0;
-    let acolchados = [];
     orden.servicios.forEach((s) => {
-      const precio = Number(s.precio_unitario);
-      const cant = Number(s.cantidad);
-      if (s.nombre.toLowerCase().includes("acolchado")) {
-        for (let i = 0; i < cant; i++) acolchados.push(precio);
-      } else {
-        total += cant * precio;
-      }
+      total += Number(s.precio_unitario) * Number(s.cantidad);
     });
-    acolchados.sort((a, b) => b - a);
-    acolchados.forEach((precio, index) => {
-      if ((index + 1) % 3 !== 0) total += precio;
-    });
+
+    if (promoActivaHoy()) {
+      const acolchados = [];
+      const camperones = [];
+      orden.servicios.forEach((s) => {
+        const nombre = s.nombre.toLowerCase();
+        const precio = Number(s.precio_unitario);
+        const cant = Number(s.cantidad);
+        if (nombre.includes("acolchado") || nombre.includes("frazada")) {
+          for (let i = 0; i < cant; i++) acolchados.push(precio);
+        } else if (nombre.includes("camperon") || nombre.includes("camperón")) {
+          for (let i = 0; i < cant; i++) camperones.push(precio);
+        }
+      });
+      let descuento = 0;
+      acolchados.sort((a, b) => b - a);
+      acolchados.forEach((precio, index) => {
+        if ((index + 1) % 3 === 0) descuento += precio;
+      });
+      camperones.sort((a, b) => b - a);
+      camperones.forEach((precio, index) => {
+        if ((index + 1) % 3 === 0) descuento += precio;
+      });
+      total -= descuento;
+    }
+
     return total;
   };
 
