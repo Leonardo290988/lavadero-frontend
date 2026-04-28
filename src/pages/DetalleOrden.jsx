@@ -75,12 +75,22 @@ export default function DetalleOrden() {
   };
 
   const guardarSenia = async (valor, forma) => {
-    await fetch(`${API}/ordenes/${id}/senia`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ senia: valor, forma_pago_senia: forma || formaPagoSenia }),
-    });
-    await cargarDetalle();
+    try {
+      const res = await fetch(`${API}/ordenes/${id}/senia`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senia: valor, forma_pago_senia: forma || formaPagoSenia }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Error al guardar la seña");
+        await cargarDetalle(); // restaurar valor anterior
+        return;
+      }
+      await cargarDetalle();
+    } catch (e) {
+      alert("Error de conexión al guardar la seña");
+    }
   };
 
   const guardarNotas = async (valor) => {
