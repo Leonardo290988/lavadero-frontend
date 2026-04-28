@@ -395,7 +395,7 @@ export default function DetalleOrden() {
                       {match
                         ? <>{match[1]}<strong>{match[2]}</strong></>
                         : s.nombre}
-                      <span className="text-gray-400 text-sm ml-1">(${Number(s.precio).toLocaleString("es-AR")})</span>
+                      <span className="text-blue-500 text-sm ml-1">(${Number(s.precio).toLocaleString("es-AR")})</span>
                     </div>
                   );
                 })}
