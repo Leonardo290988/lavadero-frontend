@@ -16,6 +16,7 @@ export default function DetalleOrden() {
   const [dropdownAbierto, setDropdownAbierto] = useState(false);
 
   const [senia, setSenia] = useState(0);
+  const [formaPagoSenia, setFormaPagoSenia] = useState("efectivo");
   const [notas, setNotas] = useState("");
   const [reimprimiendo, setReimprimiendo] = useState(false);
   const [eliminando, setEliminando] = useState(false);
@@ -73,11 +74,11 @@ export default function DetalleOrden() {
     }
   };
 
-  const guardarSenia = async (valor) => {
+  const guardarSenia = async (valor, forma) => {
     await fetch(`${API}/ordenes/${id}/senia`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ senia: valor }),
+      body: JSON.stringify({ senia: valor, forma_pago_senia: forma || formaPagoSenia }),
     });
     await cargarDetalle();
   };
@@ -181,9 +182,11 @@ export default function DetalleOrden() {
     }
   };
 
-  // Promo 3x2 solo de Martes a Viernes (mismo criterio que el backend)
-  const promoActivaHoy = () => {
-    const dia = new Date().toLocaleDateString("es-AR", { weekday: "long" }).toLowerCase();
+  // Promo 3x2 según el día de INGRESO de la orden (no el día actual)
+  const promoActivaEnFecha = (fechaIngreso) => {
+    if (!fechaIngreso) return false;
+    const fecha = new Date(fechaIngreso);
+    const dia = fecha.toLocaleDateString("es-AR", { weekday: "long" }).toLowerCase();
     return ["martes", "miércoles", "jueves", "viernes"].includes(dia);
   };
 
@@ -194,7 +197,7 @@ export default function DetalleOrden() {
       total += Number(s.precio_unitario) * Number(s.cantidad);
     });
 
-    if (promoActivaHoy()) {
+    if (promoActivaEnFecha(orden.fecha_ingreso)) {
       const acolchados = [];
       const camperones = [];
       orden.servicios.forEach((s) => {
@@ -207,16 +210,16 @@ export default function DetalleOrden() {
           for (let i = 0; i < cant; i++) camperones.push(precio);
         }
       });
-      let descuento = 0;
-      acolchados.sort((a, b) => b - a);
-      acolchados.forEach((precio, index) => {
-        if ((index + 1) % 3 === 0) descuento += precio;
-      });
-      camperones.sort((a, b) => b - a);
-      camperones.forEach((precio, index) => {
-        if ((index + 1) % 3 === 0) descuento += precio;
-      });
-      total -= descuento;
+      const calcDescGrupo = (arr) => {
+        arr.sort((a, b) => b - a);
+        let desc = 0;
+        for (let i = 0; i < arr.length; i += 3) {
+          const grupo = arr.slice(i, i + 3);
+          if (grupo.length === 3) desc += Math.min(...grupo);
+        }
+        return desc;
+      };
+      total -= calcDescGrupo(acolchados) + calcDescGrupo(camperones);
     }
 
     return total;
@@ -243,7 +246,7 @@ export default function DetalleOrden() {
           {formatearFechaHoraISO(orden.fecha_ingreso)}
         </p>
 
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-3 flex items-center gap-3 flex-wrap">
           <b>Seña:</b>
           <input
             type="number"
@@ -252,6 +255,17 @@ export default function DetalleOrden() {
             onChange={(e) => setSenia(Number(e.target.value))}
             onBlur={() => guardarSenia(senia)}
           />
+          <select
+            className="border rounded px-2 py-1 text-sm"
+            value={formaPagoSenia}
+            onChange={(e) => {
+              setFormaPagoSenia(e.target.value);
+              if (senia > 0) guardarSenia(senia, e.target.value);
+            }}
+          >
+            <option value="efectivo">💵 Efectivo</option>
+            <option value="transferencia">📱 Transferencia / MP</option>
+          </select>
         </div>
 
         <div className="mt-3">
