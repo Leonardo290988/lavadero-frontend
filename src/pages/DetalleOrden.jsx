@@ -212,10 +212,11 @@ export default function DetalleOrden() {
       });
       const calcDescGrupo = (arr) => {
         arr.sort((a, b) => b - a);
-        let desc = 0;
-        for (let i = 0; i < arr.length; i += 3) {
-          const grupo = arr.slice(i, i + 3);
-          if (grupo.length === 3) desc += Math.min(...grupo);
+        let desc = 0, left = 0, right = arr.length - 1, count = 0;
+        while (left < right) {
+          count++;
+          if (count === 2) { desc += arr[right]; right--; count = 0; }
+          else { left++; }
         }
         return desc;
       };
