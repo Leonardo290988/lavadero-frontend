@@ -356,7 +356,7 @@ export default function DetalleOrden() {
               className="border rounded px-3 py-2 cursor-pointer bg-white flex justify-between items-center"
               onClick={() => setDropdownAbierto(!dropdownAbierto)}
             >
-              <span className={servicioId ? "" : "text-gray-400"}>
+              <span className={servicioId ? "text-blue-600 font-medium" : "text-gray-400"}>
                 {servicioId
                   ? (() => {
                       const s = servicios.find(s => String(s.id) === String(servicioId));
