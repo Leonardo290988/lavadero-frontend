@@ -66,6 +66,20 @@ export default function Envios() {
     }
   };
 
+  const marcarEnCamino = async (envioId) => {
+    if (!confirm("¿Marcar este envío como 'En camino'? Se le enviará una notificación al cliente.")) return;
+    try {
+      const res = await fetch(`${API}/envios/${envioId}/en-camino`, { method: "PUT" });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Error"); return; }
+      alert("🚚 Envío marcado como en camino. El cliente recibió la notificación.");
+      cargarEnvios();
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión");
+    }
+  };
+
   if (loading) return <p className="p-6">Cargando envíos...</p>;
 
   return (
@@ -84,6 +98,7 @@ export default function Envios() {
                 <th className="px-4 py-3">Dirección</th>
                 <th className="px-4 py-3">Zona</th>
                 <th className="px-4 py-3">Orden</th>
+                <th className="px-4 py-3">Estado</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
               </tr>
             </thead>
@@ -95,14 +110,33 @@ export default function Envios() {
                   <td className="px-4 py-3">{e.direccion}</td>
                   <td className="px-4 py-3">Zona {e.zona}</td>
                   <td className="px-4 py-3">{e.orden_id ? `#${e.orden_id}` : "-"}</td>
+                  <td className="px-4 py-3">
+                    {e.estado === "en_camino" ? (
+                      <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
+                        🚚 En camino
+                      </span>
+                    ) : (
+                      <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-bold">
+                        ⏳ Pendiente
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-center">
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex gap-2 justify-center flex-wrap">
                       {e.orden_id && (
                         <button
                           onClick={() => navigate(`/ordenes/${e.orden_id}`)}
                           className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                         >
                           Ver orden
+                        </button>
+                      )}
+                      {e.orden_id && e.estado === "pendiente" && (
+                        <button
+                          onClick={() => marcarEnCamino(e.id)}
+                          className="bg-sky-500 text-white px-3 py-1 rounded hover:bg-sky-600"
+                        >
+                          🚚 En camino
                         </button>
                       )}
                       {e.orden_id && (
