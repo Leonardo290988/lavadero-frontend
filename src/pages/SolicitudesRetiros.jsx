@@ -154,8 +154,20 @@ export default function SolicitudesRetiros() {
 
               <td className="p-2">{r.id}</td>
 
-              <td className="p-2 font-semibold">
-                {r.tipo === "envio" ? "Envío" : "Retiro"}
+              <td className="p-2">
+                {r.tipo === "envio" ? (
+                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded font-bold text-xs">
+                    📦 Envío
+                  </span>
+                ) : r.quiere_envio ? (
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold text-xs">
+                    🚚 Retiro + Envío
+                  </span>
+                ) : (
+                  <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold text-xs">
+                    📥 Solo Retiro
+                  </span>
+                )}
               </td>
 
               <td className="p-2">{r.cliente}</td>
