@@ -6,7 +6,7 @@ import { formatearFechaHoraISO } from "../utils/fechas";
 
 export default function OrdenesListas() {
 
-  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");   // ✅ AGREGADO
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
   const esAdmin = usuario?.rol === "admin";
 
   const [ordenes, setOrdenes] = useState([]);
@@ -17,7 +17,7 @@ export default function OrdenesListas() {
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [metodoPago, setMetodoPago] = useState("Efectivo");
   const [procesando, setProcesando] = useState(false);
-  const [reimprimiendo, setReimprimiendo] = useState(null); // guarda el id que se está reimprimiendo
+  const [reimprimiendo, setReimprimiendo] = useState(null);
 
   const cargarOrdenes = async () => {
     try {
@@ -38,7 +38,7 @@ export default function OrdenesListas() {
   };
 
   const confirmarRetiro = async () => {
-    if (procesando) return; // evitar doble click
+    if (procesando) return;
     setProcesando(true);
     try {
       const res = await fetch(
@@ -141,30 +141,51 @@ export default function OrdenesListas() {
 
             <tbody>
               {ordenes.map((o) => {
-                const diasLista = o.fecha_lista
-                  ? Math.floor((new Date() - new Date(o.fecha_lista)) / (1000 * 60 * 60 * 24))
-                  : 0;
-                const tieneMulta = diasLista > 30;
-                const multa = tieneMulta ? Math.floor(Number(o.total) * 0.10) : 0;
+                // 🆕 Usar datos calculados por el backend (no recalcular en frontend)
+                const multaPct = Number(o.multa_porcentaje) || 0;
+                const multaMonto = Number(o.multa_monto) || 0;
+                const diasLista = Number(o.dias_lista) || 0;
+                const tieneMulta = multaPct > 0;
+
+                // Color de fila según gravedad
+                let rowClass = "";
+                if (diasLista >= 60) rowClass = "bg-red-100";
+                else if (multaPct >= 20) rowClass = "bg-red-50";
+                else if (multaPct >= 10) rowClass = "bg-orange-50";
+
                 return (
-                <tr key={o.id} className={`border-t ${tieneMulta ? "bg-red-50" : ""}`}>
+                <tr key={o.id} className={`border-t ${rowClass}`}>
                   <td className="px-4 py-3">
-                    #{o.id}
-                    {tieneMulta && (
-                      <span className="ml-2 text-xs bg-red-600 text-white px-2 py-0.5 rounded-full">
-                        +{diasLista}d ⚠️
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span>#{o.id}</span>
+                      {tieneMulta && (
+                        <span className={`text-xs px-2 py-0.5 rounded-full text-white font-semibold ${
+                          multaPct >= 20 ? "bg-red-600" : "bg-orange-500"
+                        }`}>
+                          ⚠️ Multa {multaPct}%
+                        </span>
+                      )}
+                      {diasLista >= 60 && (
+                        <span className="text-xs bg-red-700 text-white px-2 py-0.5 rounded-full font-semibold">
+                          🚨 {diasLista}d
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3">{o.cliente}</td>
                   <td className="px-4 py-3">
                     {formatearFechaHoraISO(o.fecha_ingreso)}
+                    {diasLista > 0 && (
+                      <span className="block text-xs text-gray-500">
+                        Lista hace {diasLista} {diasLista === 1 ? "día" : "días"}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 font-semibold">
-                    ${o.total_a_pagar}
+                    ${Number(o.total_a_pagar).toLocaleString("es-AR")}
                     {tieneMulta && (
                       <span className="block text-xs text-red-600 font-normal">
-                        + multa ${multa.toLocaleString("es-AR")}
+                        (incluye multa {multaPct}%: +${multaMonto.toLocaleString("es-AR")})
                       </span>
                     )}
                   </td>
