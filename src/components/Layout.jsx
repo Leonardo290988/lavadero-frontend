@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import NotificacionesOperador from "./NotificacionesOperador";
 
 const API = "https://lavadero-backend-production-e1eb.up.railway.app";
 
@@ -91,7 +92,10 @@ export default function Layout() {
           }}>
             <span>Usuario: {usuario.nombre}</span>
 
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              {/* 🔔 Campana de clientes esperando operador */}
+              <NotificacionesOperador />
+
               <button
                 onClick={() => { setMostrarCambioPass(true); setMensajePass(""); }}
                 style={{
