@@ -62,6 +62,8 @@ function Retiros() {
             <th>Cliente</th>
             <th>Teléfono</th>
             <th>Total</th>
+            <th>Fecha ingreso</th>
+            <th>Recibió / Generó</th>
             <th>Fecha retiro</th>
             <th>Entregado por</th> {/* ✅ AGREGADO */}
           </tr>
@@ -74,6 +76,8 @@ function Retiros() {
               <td>{r.cliente}</td>
               <td>{r.telefono}</td>
               <td className="total">${r.total}</td>
+              <td>{formatearFechaHoraISO(r.fecha_ingreso)}</td>
+              <td>{r.usuario_genero || "-"}</td>
               <td>{formatearFechaHoraISO(r.fecha_retiro)}</td>
               <td>{r.usuario}</td> {/* ✅ AGREGADO */}
             </tr>

@@ -9,6 +9,7 @@ export default function Envios() {
   const [envioSeleccionado, setEnvioSeleccionado] = useState(null);
   const [metodoPago, setMetodoPago] = useState("Efectivo");
   const [procesando, setProcesando] = useState(false);
+  const [reimprimiendo, setReimprimiendo] = useState(null);
 
   const navigate = useNavigate();
 
@@ -80,6 +81,23 @@ export default function Envios() {
     }
   };
 
+  const reimprimirOrden = async (ordenId) => {
+    if (!ordenId) return;
+    setReimprimiendo(ordenId);
+    try {
+      const res = await fetch(`${API}/ordenes/${ordenId}/reimprimir-orden`, { method: "POST" });
+      if (res.ok) {
+        window.open(`${API}/pdf/ordenes/orden_${ordenId}.pdf?t=${Date.now()}`, "_blank");
+      } else {
+        alert("Error al reimprimir ticket");
+      }
+    } catch (e) {
+      alert("Error de conexión");
+    } finally {
+      setReimprimiendo(null);
+    }
+  };
+
   if (loading) return <p className="p-6">Cargando envíos...</p>;
 
   return (
@@ -129,6 +147,15 @@ export default function Envios() {
                           className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                         >
                           Ver orden
+                        </button>
+                      )}
+                      {e.orden_id && (
+                        <button
+                          onClick={() => reimprimirOrden(e.orden_id)}
+                          disabled={reimprimiendo === e.orden_id}
+                          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50"
+                        >
+                          {reimprimiendo === e.orden_id ? "..." : "🖨️ Ticket"}
                         </button>
                       )}
                       {e.orden_id && e.estado === "pendiente" && (
