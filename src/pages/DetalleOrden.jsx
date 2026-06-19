@@ -73,8 +73,8 @@ export default function DetalleOrden() {
     await cargarDetalle();
     setCantidad(1);
     setServicioId("");
-    // Si la orden ya estaba confirmada, regenerar el ticket automáticamente
-    if (orden?.estado === "confirmada") {
+    // Si la orden estaba confirmada o lista, regenerar el ticket automáticamente
+    if (["confirmada", "lista"].includes(orden?.estado)) {
       await fetch(`${API}/ordenes/${id}/reimprimir-orden`, { method: "POST" });
     }
   };
@@ -119,8 +119,8 @@ export default function DetalleOrden() {
       return;
     }
     await cargarDetalle();
-    // Si la orden ya estaba confirmada, regenerar el ticket automáticamente
-    if (orden?.estado === "confirmada") {
+    // Si la orden estaba confirmada o lista, regenerar el ticket automáticamente
+    if (["confirmada", "lista"].includes(orden?.estado)) {
       await fetch(`${API}/ordenes/${id}/reimprimir-orden`, { method: "POST" });
     }
   };
