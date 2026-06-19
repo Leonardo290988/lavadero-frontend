@@ -60,11 +60,16 @@ export default function DetalleOrden() {
 
   const agregarServicio = async () => {
     if (!servicioId || cantidad <= 0) return;
-    await fetch(`${API}/ordenes/${id}/servicios`, {
+    const res = await fetch(`${API}/ordenes/${id}/servicios`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ servicio_id: servicioId, cantidad }),
+      body: JSON.stringify({ servicio_id: servicioId, cantidad, usuario_id: usuario?.id }),
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || "No se pudo agregar el servicio");
+      return;
+    }
     await cargarDetalle();
     setCantidad(1);
     setServicioId("");
@@ -103,9 +108,16 @@ export default function DetalleOrden() {
 
   const eliminarServicio = async (ordenServicioId) => {
     if (!window.confirm("¿Eliminar este servicio?")) return;
-    await fetch(`${API}/ordenes/servicios/${ordenServicioId}`, {
+    const res = await fetch(`${API}/ordenes/servicios/${ordenServicioId}`, {
       method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario_id: usuario?.id }),
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || "No se pudo eliminar el servicio");
+      return;
+    }
     await cargarDetalle();
     // Si la orden ya estaba confirmada, regenerar el ticket automáticamente
     if (orden?.estado === "confirmada") {
@@ -242,6 +254,9 @@ export default function DetalleOrden() {
   const esConfirmada = orden.estado === "confirmada";
   const esRetirada = orden.estado === "retirada";
   const esCerrada = ["lista", "retirada", "entregada"].includes(orden.estado);
+  // Servicios editables por cualquiera si la orden está abierta/confirmada.
+  // Si la orden está cerrada (lista/retirada/entregada), solo los admin pueden corregir.
+  const puedeEditarServicios = !esCerrada || esAdmin;
 
   return (
     <div className="p-6 max-w-3xl">
@@ -355,8 +370,8 @@ export default function DetalleOrden() {
         </div>
       </div>
 
-      {/* AGREGAR SERVICIO — solo si la orden no está cerrada */}
-      {!esCerrada && (
+      {/* AGREGAR SERVICIO — si la orden no está cerrada, o si es admin */}
+      {puedeEditarServicios && (
       <div className="bg-white rounded shadow p-4 mb-6">
         <h3 className="font-semibold mb-3">Agregar servicio</h3>
         <div className="flex gap-3">
@@ -442,7 +457,7 @@ export default function DetalleOrden() {
                 <td className="px-4 py-2 text-center">${s.precio_unitario}</td>
                 <td className="px-4 py-2 text-center">${s.subtotal}</td>
                 <td className="px-4 py-2 text-center">
-                  {!esCerrada && (
+                  {puedeEditarServicios && (
                     <button
                       onClick={() => eliminarServicio(s.orden_servicio_id)}
                       className="text-red-600 hover:underline"
