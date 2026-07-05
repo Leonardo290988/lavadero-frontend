@@ -97,7 +97,50 @@ export default function NotificacionesOperador() {
   const cantidad = notificaciones.length;
 
   return (
-    <div style={{ position: "relative" }}>
+    <>
+      {/* 🚨 ALERTA A PANTALLA COMPLETA mientras haya clientes esperando operador.
+          Borde rojo grueso titilando + cartel arriba. No bloquea los clics. */}
+      {cantidad > 0 && (
+        <>
+          <style>{`
+            @keyframes alertaOperadorBorde {
+              0%, 100% { opacity: 1; }
+              50%      { opacity: 0.15; }
+            }
+            @keyframes alertaOperadorCartel {
+              0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+              50%      { opacity: 0.55; transform: translateX(-50%) scale(0.98); }
+            }
+          `}</style>
+
+          {/* Borde rojo titilante en todo el contorno de la pantalla */}
+          <div style={{
+            position: "fixed", inset: 0, zIndex: 9998,
+            border: "10px solid #dc2626",
+            boxShadow: "inset 0 0 40px rgba(220,38,38,0.55)",
+            pointerEvents: "none",
+            animation: "alertaOperadorBorde 1s ease-in-out infinite"
+          }} />
+
+          {/* Cartel arriba al centro */}
+          <div style={{
+            position: "fixed", top: 12, left: "50%",
+            transform: "translateX(-50%)", zIndex: 9999,
+            background: "#dc2626", color: "#fff",
+            padding: "10px 22px", borderRadius: 10,
+            fontWeight: "bold", fontSize: 16, letterSpacing: 0.5,
+            boxShadow: "0 6px 24px rgba(0,0,0,0.35)",
+            pointerEvents: "none", whiteSpace: "nowrap",
+            animation: "alertaOperadorCartel 1s ease-in-out infinite"
+          }}>
+            ⚠️ {cantidad === 1
+              ? "CLIENTE ESPERANDO OPERADOR"
+              : `${cantidad} CLIENTES ESPERANDO OPERADOR`}
+          </div>
+        </>
+      )}
+
+      <div style={{ position: "relative" }}>
       {/* Campana */}
       <button
         onClick={() => setAbierto(a => !a)}
@@ -190,6 +233,7 @@ export default function NotificacionesOperador() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
