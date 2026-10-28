@@ -18,6 +18,8 @@ export default function OrdenesListas() {
   const [metodoPago, setMetodoPago] = useState("Efectivo");
   const [procesando, setProcesando] = useState(false);
   const [reimprimiendo, setReimprimiendo] = useState(null);
+  const [actualizandoPrecios, setActualizandoPrecios] = useState(null);
+  const [descartando, setDescartando] = useState(null);
 
   const cargarOrdenes = async () => {
     try {
@@ -97,6 +99,72 @@ export default function OrdenesListas() {
       alert("Error de conexión");
     } finally {
       setReimprimiendo(null);
+    }
+  };
+
+  // 🆕 Actualizar los precios de la orden al valor de hoy (retiros muy tardíos)
+  const actualizarPrecios = async (id) => {
+    if (!window.confirm(
+      `¿Actualizar los precios de la orden #${id} al valor de hoy?\n\n` +
+      `Se usa para retiros muy tardíos. La multa por días se sigue sumando aparte.`
+    )) return;
+
+    setActualizandoPrecios(id);
+    try {
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/actualizar-precios`,
+        { method: "PUT", headers: { "Content-Type": "application/json" } }
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error al actualizar precios");
+        return;
+      }
+
+      alert(
+        `Precios actualizados.\nNuevo total (sin multa): $${Number(data.total).toLocaleString("es-AR")}`
+      );
+      cargarOrdenes();
+    } catch (error) {
+      console.error("Error actualizando precios:", error);
+      alert("Error de conexión");
+    } finally {
+      setActualizandoPrecios(null);
+    }
+  };
+
+  // 🆕 Descartar la orden manualmente (sin límite de días, no manda WhatsApp)
+  const descartarOrden = async (id) => {
+    if (!window.confirm(
+      `¿Descartar la orden #${id}?\n\n` +
+      `Desaparece de esta lista y no se podrá retirar. Esta acción no se puede deshacer.`
+    )) return;
+
+    setDescartando(id);
+    try {
+      const res = await fetch(
+        `https://lavadero-backend-production-e1eb.up.railway.app/ordenes/${id}/descartar`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        }
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error al descartar la orden");
+        return;
+      }
+
+      alert("Orden descartada");
+      cargarOrdenes();
+    } catch (error) {
+      console.error("Error descartando orden:", error);
+      alert("Error de conexión");
+    } finally {
+      setDescartando(null);
     }
   };
 
@@ -189,7 +257,7 @@ export default function OrdenesListas() {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 flex gap-2 justify-center">
+                  <td className="px-4 py-3 flex flex-wrap gap-2 justify-center">
                     <button
                       onClick={() => navigate(`/ordenes/${o.id}`)}
                       className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
@@ -211,6 +279,27 @@ export default function OrdenesListas() {
                     >
                       {reimprimiendo === o.id ? "..." : "🖨️ Ticket"}
                     </button>
+
+                    {/* 🆕 Acciones de admin para órdenes muy demoradas */}
+                    {esAdmin && (
+                      <>
+                        <button
+                          onClick={() => actualizarPrecios(o.id)}
+                          disabled={actualizandoPrecios === o.id}
+                          className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600 disabled:opacity-50"
+                        >
+                          {actualizandoPrecios === o.id ? "..." : "💲 Actualizar precios"}
+                        </button>
+
+                        <button
+                          onClick={() => descartarOrden(o.id)}
+                          disabled={descartando === o.id}
+                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 disabled:opacity-50"
+                        >
+                          {descartando === o.id ? "..." : "🗑️ Descartar"}
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
                 );
