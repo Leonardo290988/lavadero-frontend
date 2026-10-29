@@ -101,6 +101,12 @@ export default function Sidebar() {
           <span style={{fontSize:18}}>⏳</span> Sin retirar
         </Link>
 
+        {esAdmin && (
+          <Link to="/ordenes-descartadas" className={itemClass("/ordenes-descartadas")}>
+            <span style={{fontSize:18}}>🗑️</span> Descartadas
+          </Link>
+        )}
+
         <Link to="/configuracion" className={itemClass("/configuracion")}>
           <Settings size={18} /> Configuración
         </Link>

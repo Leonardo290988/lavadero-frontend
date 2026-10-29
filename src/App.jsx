@@ -14,6 +14,7 @@ import Puntos from "./pages/Puntos";
 import ClientesInactivos from "./pages/ClientesInactivos";
 import Estadisticas from "./pages/Estadisticas";
 import OrdenesSinRetirar from "./pages/OrdenesSinRetirar";
+import OrdenesDescartadas from "./pages/OrdenesDescartadas";
 import Servicios from "./pages/Servicios";
 import Contabilidad from "./pages/Contabilidad";
 import Club from "./pages/Club";
@@ -46,6 +47,7 @@ function App() {
         <Route path="clientes-inactivos" element={<ClientesInactivos />} />
         <Route path="estadisticas" element={<Estadisticas />} />
         <Route path="ordenes-sin-retirar" element={<OrdenesSinRetirar />} />
+        <Route path="ordenes-descartadas" element={<OrdenesDescartadas />} />
         <Route path="servicios" element={<Servicios />} />
         <Route path="contabilidad" element={<Contabilidad />} />
         <Route path="club" element={<Club />} />
